@@ -80,6 +80,7 @@ void Player::update(int deltaTime)
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
+		jugadorVx = 0;
 		if (sprite->animation() != DOWN_RIGHT)
 			sprite->changeAnimation(DOWN_RIGHT);
 		bdunking = true; 
