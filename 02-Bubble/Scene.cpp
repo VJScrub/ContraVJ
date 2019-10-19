@@ -3,7 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
-
+#include "Shot.h"
+#include <GL/glut.h>
 
 
 #define SCREEN_X 128
@@ -11,6 +12,16 @@
 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 25
+
+enum PlayerAnims
+{
+	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DOWN_RIGHT, DOWN_LEFT
+};
+
+enum Dir
+{
+	RIGHT, RIGHT_UP, UP, RIGHT_DOWN, DOWN, LEFT_DOWN, LEFT, LEFT_UP
+};
 
 
 Scene::Scene()
@@ -47,6 +58,25 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	for (int k = 0; k < 6; k++) {
+		for (int i = 0; i < shots.size(); i++) {
+			if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
+			{
+				shots[i]->fin();
+				/*shots.erase(shots.begin() + i);
+				i -= 1;*/
+			}
+
+			shots[i]->update(deltaTime);
+		}
+	}
+	for (int i = 0; i < shots.size(); i++) {
+		if (shots[i]->getDist() <= 0) {
+			shots.erase(shots.begin()+i);
+			i -= 1;
+		}
+
+	}
 
 	int x = player->getPositionX();
 	int y = player->getPositionY();
@@ -59,6 +89,53 @@ void Scene::update(int deltaTime)
 	else if (vx < 0) {
 		cameraX -= 2;
 	}
+	if (Game::instance().getKey('c')) 
+	{
+		newShot();
+		shots[shots.size()-1] = new Shot();
+		int direccion;
+		float posX, posY;
+		posX = player->getPositionX();
+		posY = player->getPositionY();
+		switch (player->getAnimation())
+		{
+		case STAND_RIGHT:
+			direccion = RIGHT;
+			posX += 30;
+			posY += 5;
+			break;
+		case MOVE_RIGHT:
+			direccion = RIGHT;
+			posX += 30;
+			posY += 5;
+			break;
+		case STAND_LEFT:
+			direccion = LEFT;
+			posX -= 10;
+			posY += 5;
+			break;
+		case MOVE_LEFT:
+			direccion = LEFT;
+			posX -= 10;
+			posY += 5;
+			break;
+		case DOWN_RIGHT:
+			direccion = RIGHT;
+			posX += 30;
+			posY += 15;
+			break;
+		default:
+			break;
+		}
+		shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
+		shots[shots.size() - 1]->setPosition(glm::vec2(posX , posY));
+		shots[shots.size() - 1]->setTileMap(map);
+
+
+		//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
+	}
+
+
 	//x += deltaTime * vx;
 	//y += deltaTime * vy;
 	//x -= cameraX;
@@ -91,6 +168,22 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 	player->render();
+	
+	for (int i = 0; i < shots.size(); i++) {
+		shots[i]->render();
+	}
+
+}
+
+void Scene::iniNumberShots(int zero)
+{
+	shots.clear();
+	shots.resize(zero);
+}
+
+void Scene::newShot()
+{
+	shots.resize(shots.size() + 1);
 }
 
 void Scene::initShaders()
@@ -122,6 +215,8 @@ void Scene::initShaders()
 	vShader.free();
 	fShader.free();
 }
+
+
 
 
 

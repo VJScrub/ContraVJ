@@ -6,7 +6,8 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
-
+#include "Shot.h"
+#include <vector>
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -23,8 +24,10 @@ public:
 	void update(int deltaTime);
 	void render();
 
+	void iniNumberShots(int zero);
 private:
 	void initShaders();
+	void newShot();
 
 private:
 	TileMap *map;
@@ -33,6 +36,7 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	float cameraX, cameraY;
+	vector<Shot*> shots;
 };
 
 
