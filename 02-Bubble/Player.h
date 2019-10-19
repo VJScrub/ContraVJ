@@ -20,6 +20,15 @@ public:
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+
+	int getPositionX();
+
+	int getPositionY();
+
+	float getVX();
+
+	float getVY();
+
 	
 private:
 	bool bJumping;
@@ -30,6 +39,7 @@ private:
 	Sprite *sprite;
 	TileMap *map;
 
+	float  jugadorVx, jugadorVy;
 };
 
 

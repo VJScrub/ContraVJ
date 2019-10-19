@@ -5,7 +5,8 @@
 #include "Game.h"
 
 
-#define SCREEN_X 32
+
+#define SCREEN_X 128
 #define SCREEN_Y 16
 
 #define INIT_PLAYER_X_TILES 4
@@ -39,14 +40,18 @@ void Scene::init()
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
 	player->setTileMap(map);
 	enemy = new Enemy();
 	enemy->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	enemy->setPosition(glm::vec2(INIT_ENEMY_X_TILES * map->getTileSize(), INIT_ENEMY_Y_TILES * map->getTileSize()));
 	enemy->setTileMap(map);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	cameraX = float(SCREEN_WIDTH - 1);
+	cameraY = float(SCREEN_HEIGHT - 1);
+	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
 	currentTime = 0.0f;
+	
 }
 
 void Scene::update(int deltaTime)
@@ -54,6 +59,36 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	enemy->update(deltaTime);
+
+	int x = player->getPositionX();
+	int y = player->getPositionY();
+	float vx = player->getVX();
+	float vy = player->getVY();
+	
+	if (vx > 0) {
+		cameraX += 2;
+	}
+	else if (vx < 0) {
+		cameraX -= 2;
+	}
+	//x += deltaTime * vx;
+	//y += deltaTime * vy;
+	//x -= cameraX;
+	//y -= cameraX;
+	//if (x < (SCREEN_X / 3))
+	//	cameraX = x + cameraX - SCREEN_X / 3;
+	//if (x > (2 * SCREEN_X / 3)) {
+	//	cameraX = x + cameraX;
+	//	cameraX -= 2 * SCREEN_X / 3;
+	//}
+	//if (y < (SCREEN_Y / 3))
+	//	cameraY = y + cameraY - SCREEN_Y / 3;
+	//if (y > (2 * SCREEN_Y / 3)) {
+	//	cameraY = y + cameraY;
+	//	cameraY -= 2 * SCREEN_Y / 3;
+	//}
+	projection = glm::ortho(cameraX-SCREEN_WIDTH, cameraX, cameraY, 0.f);
+
 }
 
 void Scene::render()
