@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Shot.h"
 #include <vector>
+#include "Enemy.h"
+
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -32,6 +34,7 @@ private:
 private:
 	TileMap *map;
 	Player *player;
+	Enemy *enemy;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
