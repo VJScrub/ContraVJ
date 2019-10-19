@@ -6,14 +6,14 @@
 
 
 
-#define SCREEN_X 128
+#define SCREEN_X 32
 #define SCREEN_Y 16
 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 25
 
-#define INIT_ENEMY_X_TILES 17
-#define INIT_ENEMY_Y_TILES 25
+#define INIT_ENEMY_X_TILES 60
+#define INIT_ENEMY_Y_TILES 21
 
 
 Scene::Scene()
@@ -65,6 +65,8 @@ void Scene::update(int deltaTime)
 	float vx = player->getVX();
 	float vy = player->getVY();
 	
+
+
 	if (vx > 0) {
 		cameraX += 2;
 	}

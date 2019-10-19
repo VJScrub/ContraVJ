@@ -4,6 +4,12 @@
 #include <GL/glut.h>
 #include "Enemy.h"
 
+
+#define JUMP_ANGLE_STEP 4
+#define JUMP_HEIGHT 96
+#define FALL_STEP 4
+
+
 enum EnemyAnims
 {
 	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DOWN_RIGHT, DOWN_LEFT
@@ -11,6 +17,7 @@ enum EnemyAnims
 
 void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	bJumping = false;
 	spritesheet.loadFromFile("images/bub2.png", TEXTURE_PIXEL_FORMAT_RGBA);
     // crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), &spritesheet, &shaderProgram);
@@ -43,10 +50,42 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Enemy::update(int deltaTime)
 {
 	sprite->update(deltaTime);
-	if (sprite->animation() != STAND_RIGHT)
-		sprite->changeAnimation(STAND_RIGHT);
-	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+ 
+	if (sprite->animation() != MOVE_LEFT)
+		sprite->changeAnimation(MOVE_LEFT);
+	posEnemy.x -= 2;
+	if (map->collisionMoveLeft(posEnemy, glm::ivec2(32, 32)))
+	{
+		posEnemy.x += 2;
+		if (map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y))
+		{
+			sprite->changeAnimation(STAND_LEFT);
+			//bJumping = true;
+			jumpAngle = 0;
+			startY = posEnemy.y;
+		}
+	}
 
+	if (bJumping)
+	{
+		jumpAngle += JUMP_ANGLE_STEP;
+		if (jumpAngle == 180)
+		{
+			bJumping = false;
+			posEnemy.y = startY;
+		}
+		else
+		{
+			posEnemy.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
+			if (jumpAngle > 90)
+				bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y);
+		}
+	}
+	else
+	{
+		posEnemy.y += FALL_STEP;
+	}
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
 void Enemy::render()
