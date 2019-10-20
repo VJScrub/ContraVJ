@@ -57,10 +57,10 @@ void Enemy::update(int deltaTime)
 	if (map->collisionMoveLeft(posEnemy, glm::ivec2(32, 32)))
 	{
 		posEnemy.x += 2;
-		if (map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y))
+		if (!bJumping)
 		{
 			sprite->changeAnimation(STAND_LEFT);
-			//bJumping = true;
+			bJumping = true;
 			jumpAngle = 0;
 			startY = posEnemy.y;
 		}
@@ -84,6 +84,7 @@ void Enemy::update(int deltaTime)
 	else
 	{
 		posEnemy.y += FALL_STEP;
+		map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y);
 	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
