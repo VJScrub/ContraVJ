@@ -18,6 +18,10 @@ public:
 
 	void setPosition(const glm::vec2& pos);
 
+	int getPositionX();
+
+	int getPositionY();
+
 private:
 	bool bJumping;
 	glm::ivec2 tileMapDispl, posEnemy;

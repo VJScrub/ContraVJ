@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
@@ -20,7 +22,6 @@ Scene::Scene()
 {
 	map = NULL;
 	player = NULL;
-	enemy = NULL;
 }
 
 Scene::~Scene()
@@ -29,8 +30,6 @@ Scene::~Scene()
 		delete map;
 	if(player != NULL)
 		delete player;
-	if (enemy != NULL)
-		delete enemy;
 }
 
 
@@ -38,14 +37,11 @@ void Scene::init()
 {
 	initShaders();
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	initEnemies("levels/level01enemies.txt");
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
 	player->setTileMap(map);
-	enemy = new Enemy();
-	enemy->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemy->setPosition(glm::vec2(INIT_ENEMY_X_TILES * map->getTileSize(), INIT_ENEMY_Y_TILES * map->getTileSize()));
-	enemy->setTileMap(map);
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	cameraX = float(SCREEN_WIDTH - 1);
 	cameraY = float(SCREEN_HEIGHT - 1);
@@ -58,7 +54,9 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
-	enemy->update(deltaTime);
+	for (int i = 0; i < enemies.size(); i++) {
+		enemies[i]->update(deltaTime);
+	}
 
 	int x = player->getPositionX();
 	int y = player->getPositionY();
@@ -105,7 +103,9 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 	player->render();
-	enemy->render();
+	for (int i = 0; i < enemies.size(); i++) {
+		enemies[i]->render();
+	}
 	
 }
 
@@ -139,5 +139,54 @@ void Scene::initShaders()
 	fShader.free();
 }
 
+void Scene::initEnemies(const string& enemiesFile)
+{
+	enemies.clear();
+
+	enemies.resize(0);
+
+	ifstream fin;
+	string line, tilesheetFile;
+	stringstream sstream;
+	char tile;
+	glm::ivec2 mapSize;
+
+	fin.open(enemiesFile.c_str());
+	if (!fin.is_open())
+		return;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> mapSize.x >> mapSize.y;
+	getline(fin, line);
+	sstream.str(line);
+	sstream >> tilesheetFile;
+
+	for (int j = 0; j < mapSize.y; j++)
+	{
+		for (int i = 0; i < mapSize.x; i++)
+		{
+			fin.get(tile);
+			if (tile == '$') {
+				newEnemy();
+				enemies[enemies.size() - 1] = new Enemy();
+				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				enemies[enemies.size() - 1]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+				enemies[enemies.size() - 1]->setTileMap(map);
+			}
+		}
+		fin.get(tile);
+#ifndef _WIN32
+			fin.get(tile);
+#endif
+		}
+		fin.close();
+}
+
+
+
+void Scene::newEnemy()
+{
+	enemies.resize(enemies.size() + 1);
+}
 
 
