@@ -62,6 +62,7 @@ void Scene::init()
 	cameraY = float(SCREEN_HEIGHT - 1);
 	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
 	currentTime = 0.0f;
+	shotDelay = 0;
 	
 }
 
@@ -106,50 +107,17 @@ void Scene::update(int deltaTime)
 	}
 	if (Game::instance().getKey('c')) 
 	{
-		newShot();
-		shots[shots.size()-1] = new Shot();
-		int direccion;
-		float posX, posY;
-		posX = player->getPositionX();
-		posY = player->getPositionY();
-		switch (player->getAnimation())
+		if (shotDelay == false)
 		{
-		case STAND_RIGHT:
-			direccion = RIGHT;
-			posX += 30;
-			posY += 5;
-			break;
-		case MOVE_RIGHT:
-			direccion = RIGHT;
-			posX += 30;
-			posY += 5;
-			break;
-		case STAND_LEFT:
-			direccion = LEFT;
-			posX -= 10;
-			posY += 5;
-			break;
-		case MOVE_LEFT:
-			direccion = LEFT;
-			posX -= 10;
-			posY += 5;
-			break;
-		case DOWN_RIGHT:
-			direccion = RIGHT;
-			posX += 30;
-			posY += 15;
-			break;
-		default:
-			break;
+			shotDelay = true;
+			makeShot();
 		}
-		shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
-		shots[shots.size() - 1]->setPosition(glm::vec2(posX , posY));
-		shots[shots.size() - 1]->setTileMap(map);
-
-
 		//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
 	}
-
+	else
+	{
+		shotDelay = false;
+	}
 
 	//x += deltaTime * vx;
 	//y += deltaTime * vy;
@@ -169,6 +137,49 @@ void Scene::update(int deltaTime)
 	//}
 	projection = glm::ortho(cameraX-SCREEN_WIDTH, cameraX, cameraY, 0.f);
 
+}
+
+void Scene::makeShot()
+{
+	newShot();
+	shots[shots.size() - 1] = new Shot();
+	int direccion;
+	float posX, posY;
+	posX = player->getPositionX();
+	posY = player->getPositionY();
+	switch (player->getAnimation())
+	{
+	case STAND_RIGHT:
+		direccion = RIGHT;
+		posX += 30;
+		posY += 5;
+		break;
+	case MOVE_RIGHT:
+		direccion = RIGHT;
+		posX += 30;
+		posY += 5;
+		break;
+	case STAND_LEFT:
+		direccion = LEFT;
+		posX -= 10;
+		posY += 5;
+		break;
+	case MOVE_LEFT:
+		direccion = LEFT;
+		posX -= 10;
+		posY += 5;
+		break;
+	case DOWN_RIGHT:
+		direccion = RIGHT;
+		posX += 30;
+		posY += 15;
+		break;
+	default:
+		break;
+	}
+	shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
+	shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
+	shots[shots.size() - 1]->setTileMap(map);
 }
 
 void Scene::render()

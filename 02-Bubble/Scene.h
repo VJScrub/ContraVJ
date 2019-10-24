@@ -24,6 +24,7 @@ public:
 
 	void init();
 	void update(int deltaTime);
+	void makeShot();
 	void render();
 
 	void iniNumberShots(int zero);
@@ -40,6 +41,7 @@ private:
 	glm::mat4 projection;
 	float cameraX, cameraY;
 	vector<Shot*> shots;
+	bool shotDelay;
 };
 
 
