@@ -32,10 +32,15 @@ private:
 	void initShaders();
 	void newShot();
 
+	void initEnemies(const string& enemiesFile);
+
+	void newEnemy();
+
+
 private:
 	TileMap *map;
 	Player *player;
-	Enemy *enemy;
+	vector<Enemy*> enemies;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
