@@ -26,6 +26,8 @@ public:
 
 	void fin();
 
+	void PlayerShot();
+
 private:
 	glm::ivec2 tileMapDispl, posIni;
 	int dist, direccion;
@@ -34,6 +36,7 @@ private:
 	TileMap* map;
 	float offset;
 	float  ShotVx, ShotVy;
+	bool shotPlayer;
 	
 };
 

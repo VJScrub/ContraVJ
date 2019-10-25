@@ -60,6 +60,7 @@ void Scene::init()
 	currentTime = 0.0f;
 	shotDelay = 0;
 	
+
 }
 
 void Scene::update(int deltaTime)
@@ -69,6 +70,13 @@ void Scene::update(int deltaTime)
 	
 	for (int k = 0; k < 6; k++) {
 		for (int i = 0; i < shots.size(); i++) {
+
+			for (int j = 0; j < enemies.size(); j++) {
+				if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+					enemies[j]->muerteEnemyPersona();
+				}
+			}
+
 			if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
 			{
 				shots[i]->fin();
@@ -87,26 +95,6 @@ void Scene::update(int deltaTime)
 
 	}
 
-	for (int k = 0; k < 6; k++) {
-		for (int i = 0; i < shots.size(); i++) {
-			if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
-			{
-				shots[i]->fin();
-				/*shots.erase(shots.begin() + i);
-				i -= 1;*/
-			}
-
-			shots[i]->update(deltaTime);
-		}
-	}
-	for (int i = 0; i < shots.size(); i++) {
-		if (shots[i]->getDist() <= 0) {
-			shots.erase(shots.begin()+i);
-			i -= 1;
-		}
-
-	}
-	enemy->update(deltaTime);
 	for (int i = 0; i < enemies.size(); i++) {
 		enemies[i]->update(deltaTime);
 	}
@@ -124,12 +112,13 @@ void Scene::update(int deltaTime)
 	else if (vx < 0) {
 		cameraX -= 2;
 	}
+
 	if (Game::instance().getKey('c')) 
 	{
 		if (shotDelay == false)
 		{
 			shotDelay = true;
-			makeShot();
+			makeShot(true);
 		}
 		//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
 	}
@@ -158,7 +147,7 @@ void Scene::update(int deltaTime)
 
 }
 
-void Scene::makeShot()
+void Scene::makeShot(bool playershot)
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
@@ -199,6 +188,10 @@ void Scene::makeShot()
 	shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
 	shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
 	shots[shots.size() - 1]->setTileMap(map);
+	if (playershot)
+	{
+		shots[shots.size() - 1]->PlayerShot();
+	}
 }
 
 void Scene::render()
@@ -213,8 +206,18 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 	player->render();
-	enemy->render();
-	
+	for (int i = 0; i < enemies.size(); i++) {
+		enemies[i]->render();
+	}
+	for (int i = 0; i < shots.size(); i++) {
+		shots[i]->render();
+	}
+}
+
+void Scene::iniNumberShots(int zero)
+{
+	shots.clear();
+	shots.resize(zero);
 }
 
 void Scene::initShaders()
@@ -245,6 +248,11 @@ void Scene::initShaders()
 	texProgram.bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
+}
+
+void Scene::newShot()
+{
+	shots.resize(shots.size() + 1);
 }
 
 void Scene::initEnemies(const string& enemiesFile)

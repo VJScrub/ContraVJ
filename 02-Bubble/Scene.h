@@ -24,7 +24,7 @@ public:
 
 	void init();
 	void update(int deltaTime);
-	void makeShot();
+	void makeShot(bool playershot);
 	void render();
 
 	void iniNumberShots(int zero);
