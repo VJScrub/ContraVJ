@@ -55,7 +55,10 @@ void Scene::update(int deltaTime)
 	currentTime += deltaTime;
 	player->update(deltaTime);
 	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i]->update(deltaTime);
+		current_x = enemies[i]->getPositionX();
+		current_y = enemies[i]->getPositionY();
+		if ((current_x > cameraX - (SCREEN_WIDTH + (INIT_PLAYER_X_TILES+1) * map->getTileSize()) && current_x < cameraX) && (current_y < cameraY && current_y > -16))
+			enemies[i]->update(deltaTime);
 	}
 
 	int x = player->getPositionX();
