@@ -15,6 +15,11 @@
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 21
 
+enum CicloVida
+{
+	Pantalla_Inicial, Level1, Level2, Creditos
+};
+
 enum PlayerAnims
 {
 	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DOWN_RIGHT, DOWN_LEFT
@@ -46,104 +51,163 @@ Scene::~Scene()
 
 void Scene::init()
 {
+	Estado = Pantalla_Inicial;
+
 	initShaders();
+	//Pantalla Inicial
+	mapPantallaInicial = TileMap::createTileMap("levels/PantallaInicial.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	
+	//Creditos
+	mapCreditos = TileMap::createTileMap("levels/Creditos.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
+
+	//Mapa Inicial 
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	initEnemies("levels/level01enemies.txt");
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
 	player->setTileMap(map);
+	
+	
+	
+	
+	
+	
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	cameraX = float(SCREEN_WIDTH - 1);
 	cameraY = float(SCREEN_HEIGHT - 1);
 	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
 	currentTime = 0.0f;
-	shotDelay = 0;
+	shotDelay = creditosDelay = 0;
 	
 
 }
 
 void Scene::update(int deltaTime)
 {
-	currentTime += deltaTime;
-	player->update(deltaTime);
-	
-	for (int k = 0; k < 6; k++) {
-		for (int i = 0; i < shots.size(); i++) {
-
-			for (int j = 0; j < enemies.size(); j++) {
-				if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
-					enemies[j]->muerteEnemyPersona();
-				}
-			}
-
-			if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
-			{
-				shots[i]->fin();
-				/*shots.erase(shots.begin() + i);
-				i -= 1;*/
-			}
-
-			shots[i]->update(deltaTime);
-		}
-	}
-	for (int i = 0; i < shots.size(); i++) {
-		if (shots[i]->getDist() <= 0) {
-			shots.erase(shots.begin()+i);
-			i -= 1;
-		}
-
-	}
-
-	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i]->update(deltaTime);
-	}
-
 	int x = player->getPositionX();
 	int y = player->getPositionY();
 	float vx = player->getVX();
 	float vy = player->getVY();
-	
 
-
-	if (vx > 0) {
-		cameraX += 2;
-	}
-	else if (vx < 0) {
-		cameraX -= 2;
-	}
-
-	if (Game::instance().getKey('c')) 
+	switch (Estado)
 	{
-		if (shotDelay == false)
+	case Pantalla_Inicial:
+		
+		if (Game::instance().getKey('c'))
 		{
-			shotDelay = true;
-			makeShot(true);
+			if (creditosDelay == false) {
+				creditosDelay = true;
+				Estado = Creditos;
+			}
 		}
-		//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
-	}
-	else
-	{
-		shotDelay = false;
+		else
+			creditosDelay = false;
+		
+		if (Game::instance().getKey('x'))
+		{
+			Estado = Level1;
+		}
+
+		break;
+	case Level1:
+
+		currentTime += deltaTime;
+		player->update(deltaTime);
+
+		for (int k = 0; k < 6; k++) {
+			for (int i = 0; i < shots.size(); i++) {
+
+				for (int j = 0; j < enemies.size(); j++) {
+					if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						enemies[j]->muerteEnemyPersona();
+					}
+				}
+
+				if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
+				{
+					shots[i]->fin();
+					/*shots.erase(shots.begin() + i);
+					i -= 1;*/
+				}
+
+				shots[i]->update(deltaTime);
+			}
+		}
+		for (int i = 0; i < shots.size(); i++) {
+			if (shots[i]->getDist() <= 0) {
+				shots.erase(shots.begin() + i);
+				i -= 1;
+			}
+
+		}
+
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies[i]->update(deltaTime);
+		}
+
+		
+
+
+		if (vx > 0) {
+			cameraX += 2;
+		}
+		else if (vx < 0) {
+			cameraX -= 2;
+		}
+
+		if (Game::instance().getKey('x'))
+		{
+			if (shotDelay == false)
+			{
+				shotDelay = true;
+				makeShot(true);
+			}
+			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
+		}
+		else
+		{
+			shotDelay = false;
+		}
+
+		//x += deltaTime * vx;
+		//y += deltaTime * vy;
+		//x -= cameraX;
+		//y -= cameraX;
+		//if (x < (SCREEN_X / 3))
+		//	cameraX = x + cameraX - SCREEN_X / 3;
+		//if (x > (2 * SCREEN_X / 3)) {
+		//	cameraX = x + cameraX;
+		//	cameraX -= 2 * SCREEN_X / 3;
+		//}
+		//if (y < (SCREEN_Y / 3))
+		//	cameraY = y + cameraY - SCREEN_Y / 3;
+		//if (y > (2 * SCREEN_Y / 3)) {
+		//	cameraY = y + cameraY;
+		//	cameraY -= 2 * SCREEN_Y / 3;
+		//}
+		projection = glm::ortho(cameraX - SCREEN_WIDTH, cameraX, cameraY, 0.f);
+
+
+		break;
+
+
+	case Creditos:
+		
+		if (Game::instance().getKey('c'))
+		{
+			if (creditosDelay == false) {
+				creditosDelay = true;
+				Estado = Pantalla_Inicial;
+			}
+			
+		}
+		else
+			creditosDelay = false;
+		break;
 	}
 
-	//x += deltaTime * vx;
-	//y += deltaTime * vy;
-	//x -= cameraX;
-	//y -= cameraX;
-	//if (x < (SCREEN_X / 3))
-	//	cameraX = x + cameraX - SCREEN_X / 3;
-	//if (x > (2 * SCREEN_X / 3)) {
-	//	cameraX = x + cameraX;
-	//	cameraX -= 2 * SCREEN_X / 3;
-	//}
-	//if (y < (SCREEN_Y / 3))
-	//	cameraY = y + cameraY - SCREEN_Y / 3;
-	//if (y > (2 * SCREEN_Y / 3)) {
-	//	cameraY = y + cameraY;
-	//	cameraY -= 2 * SCREEN_Y / 3;
-	//}
-	projection = glm::ortho(cameraX-SCREEN_WIDTH, cameraX, cameraY, 0.f);
 
 }
 
@@ -204,14 +268,27 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	map->render();
-	player->render();
-	for (int i = 0; i < enemies.size(); i++) {
-		enemies[i]->render();
+	switch (Estado)
+	{
+	case Pantalla_Inicial:
+		mapPantallaInicial->render();
+		break;
+	case Level1:
+		map->render();
+		player->render();
+		for (int i = 0; i < enemies.size(); i++) {
+			enemies[i]->render();
+		}
+		for (int i = 0; i < shots.size(); i++) {
+			shots[i]->render();
+		}
+		break;
+
+	case Creditos:
+		mapCreditos->render();
+		break;
 	}
-	for (int i = 0; i < shots.size(); i++) {
-		shots[i]->render();
-	}
+		
 }
 
 void Scene::iniNumberShots(int zero)

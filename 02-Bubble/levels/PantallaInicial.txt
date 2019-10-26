@@ -1,0 +1,7 @@
+TILEMAP
+2 2 							-- Size of tile map in tiles
+224 224						-- Tile size & block size  	
+images/PantallaInicial.png 	-- Tilesheet
+2 2 								-- Number of tiles in tilesheet
+12
+34
