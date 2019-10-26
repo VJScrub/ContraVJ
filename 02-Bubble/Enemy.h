@@ -26,6 +26,8 @@ public:
 
 	void muerteEnemyPersona();
 
+	bool final();
+
 private:
 	bool bJumping;
 	glm::ivec2 tileMapDispl, posEnemy;
@@ -36,6 +38,8 @@ private:
 	Sprite* spriteMuerto;
 	TileMap* map;
 	bool muerto;
+	int DelayMuerte;
+	bool fin;
 };
 
 #endif // _ENEMY_INCLUDE

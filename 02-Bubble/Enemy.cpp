@@ -31,9 +31,7 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.25f, 0.f));
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
-
-
-
+	   
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
@@ -41,21 +39,26 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 	spritesheetMuerto.loadFromFile("images/muerteEnemigo.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	// crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
-	spriteMuerto = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.25, 1), &spritesheetMuerto, &shaderProgram);
+	spriteMuerto = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.5, 0.5), &spritesheetMuerto, &shaderProgram);
 	spriteMuerto->setNumberAnimations(3);
 
 	spriteMuerto->setAnimationSpeed(0, 8);
 	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
 
 	spriteMuerto->setAnimationSpeed(1, 8);
-	spriteMuerto->addKeyframe(1, glm::vec2(0.25f, 0.f));
+	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
+	spriteMuerto->addKeyframe(1, glm::vec2(0.f, 0.5f));
 
 	spriteMuerto->setAnimationSpeed(2, 8);
-	spriteMuerto->addKeyframe(2, glm::vec2(0.25, 0.5f));
+	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
+	spriteMuerto->addKeyframe(1, glm::vec2(0.f, 0.5f));
+	spriteMuerto->addKeyframe(2, glm::vec2(0.5, 0.f));
 
 	spriteMuerto->changeAnimation(0);
 	spriteMuerto->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 
+	DelayMuerte = 8;
+	fin = false;
 }
 
 void Enemy::update(int deltaTime)
@@ -64,10 +67,18 @@ void Enemy::update(int deltaTime)
 	sprite->update(deltaTime);
 	if (muerto == true)
 	{
-		if (sprite->animation() == 0)
-			sprite->changeAnimation(1);
-		if (sprite->animation() == 1)
-			sprite->changeAnimation(2);
+		if (spriteMuerto->animation() == 0 && DelayMuerte == 0) {
+			DelayMuerte = 8;
+			spriteMuerto->changeAnimation(1);
+		}
+		else if (spriteMuerto->animation() == 1 && DelayMuerte == 0) {
+			DelayMuerte = 8;
+			spriteMuerto->changeAnimation(2);
+		}
+		else if (spriteMuerto->animation() == 2 && DelayMuerte == 0)
+			fin = true;
+		else
+			DelayMuerte -= 1;
 		spriteMuerto->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 
 	}
@@ -155,4 +166,9 @@ bool Enemy::hurted(float x, float y)
 void Enemy::muerteEnemyPersona()
 {
 	muerto = true;
+}
+
+bool Enemy::final()
+{
+	return fin;
 }

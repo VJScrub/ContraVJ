@@ -145,15 +145,18 @@ void Scene::update(int deltaTime)
 
 		for (int i = 0; i < enemies.size(); i++) {
 			enemies[i]->update(deltaTime);
+			if (enemies[i]->final()) {
+				enemies.erase(enemies.begin() + i);
+				i -= 1;
+			}
 		}
-
 		
-
-
 		if (vx > 0) {
+			if((cameraX < ((map->returnMapSize().x + 1) * map->getTileSize())) && (player->getPositionX() > ((cameraX-45) - SCREEN_WIDTH/ 2)))
 			cameraX += 2;
 		}
 		else if (vx < 0) {
+			if ((cameraX - SCREEN_WIDTH > 0) && (player->getPositionX() < ((cameraX - 45) - SCREEN_WIDTH / 2)))
 			cameraX -= 2;
 		}
 
