@@ -41,6 +41,8 @@ private:
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
+	Enemy *currentEnemy;
+	int current_x, current_y;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

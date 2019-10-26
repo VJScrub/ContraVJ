@@ -20,16 +20,24 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	bJumping = false;
 	spritesheet.loadFromFile("images/runenemies.png", TEXTURE_PIXEL_FORMAT_RGBA);
     // crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
-	sprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(0.25, 1), &spritesheet, &shaderProgram);
+	sprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(0.25, 0.5), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(5);
 
 	sprite->setAnimationSpeed(STAND_LEFT, 8);
-	sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
+	sprite->addKeyframe(STAND_LEFT, glm::vec2(0.5f, 0.f));
 
 	sprite->setAnimationSpeed(MOVE_LEFT, 8);
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.25f, 0.f));
 	sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.5f, 0.f));
+
+	sprite->setAnimationSpeed(STAND_RIGHT, 8);
+	sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.5f, 0.5f));
+
+	sprite->setAnimationSpeed(MOVE_RIGHT, 8);
+	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, 0.5f));
+	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25f, 0.5f));
+	sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.5f, 0.5f));
 
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
@@ -39,21 +47,44 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Enemy::update(int deltaTime)
 {
 	sprite->update(deltaTime);
- 
-	if (sprite->animation() != MOVE_LEFT)
-		sprite->changeAnimation(MOVE_LEFT);
-	posEnemy.x -= 2;
-	if (map->collisionMoveLeft(posEnemy, glm::ivec2(32, 32)))
+
+	if (sprite->animation() == MOVE_LEFT) {
+		posEnemy.x -= 2;
+		if (map->collisionMoveLeft(posEnemy, glm::ivec2(16, 32)))
+		{
+			posEnemy.x += 2;
+			if (!bJumping)
+			{
+				sprite->changeAnimation(STAND_LEFT);
+				bJumping = true;
+				jumpAngle = 0;
+				startY = posEnemy.y;
+			}
+		}
+		posEnemy.y += FALL_STEP;
+		if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) 
+		{
+			posEnemy.x += 4;
+			sprite->changeAnimation(MOVE_RIGHT);
+		}
+		posEnemy.y -= FALL_STEP;
+	}
+	if (sprite->animation() == MOVE_RIGHT)
 	{
 		posEnemy.x += 2;
-		if (!bJumping)
+		if (map->collisionMoveRight(posEnemy, glm::ivec2(16, 32)))
 		{
-			sprite->changeAnimation(STAND_LEFT);
-			bJumping = true;
-			jumpAngle = 0;
-			startY = posEnemy.y;
+			posEnemy.x -= 2;
+			sprite->changeAnimation(MOVE_LEFT);
 		}
+		posEnemy.y += FALL_STEP;
+		if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) {
+			posEnemy.x -= 2;
+			sprite->changeAnimation(MOVE_LEFT);
+		}
+		posEnemy.y -= FALL_STEP;
 	}
+	
 
 	if (bJumping)
 	{
@@ -67,13 +98,17 @@ void Enemy::update(int deltaTime)
 		{
 			posEnemy.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
 			if (jumpAngle > 90)
-				bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y);
+				bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y);
 		}
 	}
 	else
 	{
 		posEnemy.y += FALL_STEP;
-		map->collisionMoveDown(posEnemy, glm::ivec2(32, 32), &posEnemy.y);
+		if (map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
+		{
+			if (sprite->animation() == STAND_LEFT)
+				sprite->changeAnimation(MOVE_LEFT);
+		}
 	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
