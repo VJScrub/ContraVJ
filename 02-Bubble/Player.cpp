@@ -51,6 +51,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime)
 {
+	AnimacionActual = sprite->animation();
 	sprite->update(deltaTime);
 	if(Game::instance().getSpecialKey(GLUT_KEY_LEFT))
 	{
@@ -173,3 +174,7 @@ float Player::getVY()
 	return jugadorVy;
 }
 
+int Player::getAnimation()
+{
+	return AnimacionActual;
+}

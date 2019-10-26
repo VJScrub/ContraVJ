@@ -6,6 +6,8 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Shot.h"
+#include <vector>
 #include "Enemy.h"
 
 
@@ -22,10 +24,13 @@ public:
 
 	void init();
 	void update(int deltaTime);
+	void makeShot();
 	void render();
 
+	void iniNumberShots(int zero);
 private:
 	void initShaders();
+	void newShot();
 
 	void initEnemies(const string& enemiesFile);
 
@@ -40,6 +45,8 @@ private:
 	float currentTime;
 	glm::mat4 projection;
 	float cameraX, cameraY;
+	vector<Shot*> shots;
+	bool shotDelay;
 };
 
 

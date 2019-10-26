@@ -29,6 +29,8 @@ public:
 
 	float getVY();
 
+	int getAnimation();
+
 	
 private:
 	bool bJumping;
@@ -39,6 +41,7 @@ private:
 	Sprite *sprite;
 	TileMap *map;
 
+	int AnimacionActual;
 	float  jugadorVx, jugadorVy;
 };
 
