@@ -52,6 +52,16 @@ void Shot::update(int deltaTime)
 		break;
 	case RIGHT_UP:
 		posIni.x += 1;
+		posIni.y -= 1;
+		break;
+	case LEFT_UP:
+		posIni.x -= 1;
+		posIni.y -= 1;
+		break;
+	case UP:
+		posIni.y -= 1;
+		break;
+	case DOWN:
 		posIni.y += 1;
 		break;
 	default:

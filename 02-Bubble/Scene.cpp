@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "Shot.h"
 #include <GL/glut.h>
+#include "PantallaInicialJP.h"
 
 
 #define SCREEN_X 32
@@ -22,7 +23,7 @@ enum CicloVida
 
 enum PlayerAnims
 {
-	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DOWN_RIGHT, DOWN_LEFT
+	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, DOWN_RIGHT, DOWN_LEFT, MOVE_RIGHT_UP, MOVE_LEFT_UP, JUMP
 };
 
 enum Dir
@@ -56,7 +57,10 @@ void Scene::init()
 	initShaders();
 	//Pantalla Inicial
 	mapPantallaInicial = TileMap::createTileMap("levels/PantallaInicial.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	
+	pijp = new PantallaInicialJP();
+	pijp->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	pijp->setTileMap(mapPantallaInicial);
+
 	//Creditos
 	mapCreditos = TileMap::createTileMap("levels/Creditos.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 
@@ -69,11 +73,7 @@ void Scene::init()
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
 	player->setTileMap(map);
 	
-	
-	
-	
-	
-	
+		
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	cameraX = float(SCREEN_WIDTH - 1);
 	cameraY = float(SCREEN_HEIGHT - 1);
@@ -94,7 +94,7 @@ void Scene::update(int deltaTime)
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
-		
+		pijp->update(deltaTime);
 		if (Game::instance().getKey('c'))
 		{
 			if (creditosDelay == false) {
@@ -196,6 +196,12 @@ void Scene::update(int deltaTime)
 		break;
 
 
+	case Level2:
+		currentTime += deltaTime;
+		playerVert->update(deltaTime);
+
+		break;
+
 	case Creditos:
 		
 		if (Game::instance().getKey('c'))
@@ -218,29 +224,18 @@ void Scene::makeShot(bool playershot)
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
-	int direccion;
+	int direccion = player->getDireccion();
 	float posX, posY;
 	posX = player->getPositionX();
 	posY = player->getPositionY();
-	switch (player->getAnimation())
+	switch (player->getDireccion())
 	{
-	case STAND_RIGHT:
-		direccion = RIGHT;
+	case RIGHT:
 		posX += 30;
 		posY += 5;
 		break;
-	case MOVE_RIGHT:
-		direccion = RIGHT;
-		posX += 30;
-		posY += 5;
-		break;
-	case STAND_LEFT:
-		direccion = LEFT;
-		posX -= 10;
-		posY += 5;
-		break;
-	case MOVE_LEFT:
-		direccion = LEFT;
+	
+	case LEFT:
 		posX -= 10;
 		posY += 5;
 		break;
@@ -248,6 +243,17 @@ void Scene::makeShot(bool playershot)
 		direccion = RIGHT;
 		posX += 30;
 		posY += 15;
+		break;
+	case RIGHT_UP:
+		posX += 20;
+		posY += 0;
+		break;
+	case LEFT_UP:
+		posX -= 5;
+		posY += 0;
+		break;
+	case UP:
+		posY -= 10;
 		break;
 	default:
 		break;
@@ -275,6 +281,7 @@ void Scene::render()
 	{
 	case Pantalla_Inicial:
 		mapPantallaInicial->render();
+		pijp->render();
 		break;
 	case Level1:
 		map->render();
@@ -286,6 +293,10 @@ void Scene::render()
 			shots[i]->render();
 		}
 		break;
+
+	case Level2:
+		mapLevel2->render();
+		playerVert->render();
 
 	case Creditos:
 		mapCreditos->render();

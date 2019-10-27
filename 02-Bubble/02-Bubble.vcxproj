@@ -14,7 +14,9 @@
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="PantallaInicialJP.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerVertical.h" />
     <ClInclude Include="resource1.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
@@ -28,7 +30,9 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PantallaInicialJP.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerVertical.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />

@@ -6,9 +6,11 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "PlayerVertical.h"
 #include "Shot.h"
 #include <vector>
 #include "Enemy.h"
+#include "PantallaInicialJP.h"
 
 
 // Scene contains all the entities of our game.
@@ -39,10 +41,17 @@ private:
 
 private:
 	TileMap* mapPantallaInicial;
+	PantallaInicialJP *pijp;
+	
 	TileMap* mapCreditos;
+	
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
+
+	TileMap* mapLevel2;
+	PlayerVertical *playerVert;
+
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;

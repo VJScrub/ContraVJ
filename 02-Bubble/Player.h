@@ -31,6 +31,8 @@ public:
 
 	int getAnimation();
 
+	int getDireccion();
+
 	
 private:
 	bool bJumping;
@@ -40,6 +42,7 @@ private:
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
+	int direccion;
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;
