@@ -8,6 +8,7 @@ class PlayerVertical
 
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
+	void updateRun(int deltaTime);
 	void update(int deltaTime);
 	void render();
 
@@ -26,6 +27,8 @@ public:
 
 	int getDireccion();
 
+	float getposIniY();
+
 
 private:
 	bool bJumping;
@@ -38,6 +41,8 @@ private:
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;
+
+	float posIniY;
 };
 #endif
 

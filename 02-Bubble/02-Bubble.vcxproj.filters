@@ -14,6 +14,8 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="PantallaInicialJP.cpp" />
     <ClCompile Include="PlayerVertical.cpp" />
+    <ClCompile Include="PantallaLevel2Stage1.cpp" />
+    <ClCompile Include="PantallaLeve2Boss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
@@ -30,6 +32,8 @@
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="PantallaInicialJP.h" />
     <ClInclude Include="PlayerVertical.h" />
+    <ClInclude Include="PantallaLevel2Stage1.h" />
+    <ClInclude Include="PantallaLeve2Boss.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="02-Bubble1.rc" />

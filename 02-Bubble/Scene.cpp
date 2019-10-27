@@ -8,6 +8,7 @@
 #include "Shot.h"
 #include <GL/glut.h>
 #include "PantallaInicialJP.h"
+#include "PantallaLevel2Stage1.h"
 
 
 #define SCREEN_X 32
@@ -65,7 +66,7 @@ void Scene::init()
 	mapCreditos = TileMap::createTileMap("levels/Creditos.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 
 
-	//Mapa Inicial 
+	//Level1  
 	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	initEnemies("levels/level01enemies.txt");
 	player = new Player();
@@ -73,13 +74,26 @@ void Scene::init()
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
 	player->setTileMap(map);
 	
+	//Level2
+	mapLevel2 = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	playerVert = new PlayerVertical();
+	playerVert->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	playerVert->setPosition(glm::vec2(INIT_PLAYER_X_TILES * mapLevel2->getTileSize() / 2, INIT_PLAYER_Y_TILES * mapLevel2->getTileSize() / 2));
+	playerVert->setTileMap(mapLevel2);
+	Stage1 = new PantallaLevel2Stage1();
+	Stage1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	StageBoss = new PantallaLeve2Boss();
+	StageBoss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	siguienteNivel = false;
+	
 		
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	cameraX = float(SCREEN_WIDTH - 1);
 	cameraY = float(SCREEN_HEIGHT - 1);
 	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
 	currentTime = 0.0f;
-	shotDelay = creditosDelay = 0;
+	creditosDelay = 0;
+	shotDelay = true;
 	
 
 }
@@ -107,7 +121,7 @@ void Scene::update(int deltaTime)
 		
 		if (Game::instance().getKey('x'))
 		{
-			Estado = Level1;
+			Estado = Level2;
 		}
 
 		break;
@@ -132,7 +146,7 @@ void Scene::update(int deltaTime)
 					i -= 1;*/
 				}
 
-				shots[i]->update(deltaTime);
+				shots[i]->update(deltaTime, false);
 			}
 		}
 		for (int i = 0; i < shots.size(); i++) {
@@ -165,7 +179,7 @@ void Scene::update(int deltaTime)
 			if (shotDelay == false)
 			{
 				shotDelay = true;
-				makeShot(true);
+				makeShot(true,false);
 			}
 			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
 		}
@@ -198,7 +212,63 @@ void Scene::update(int deltaTime)
 
 	case Level2:
 		currentTime += deltaTime;
-		playerVert->update(deltaTime);
+
+		for (int k = 0; k < 6; k++) {
+			for (int i = 0; i < shots.size(); i++) {
+
+				for (int j = 0; j < enemies.size(); j++) {
+					if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						enemies[j]->muerteEnemyPersona();
+					}
+				}
+
+				if (mapLevel2->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
+				{
+					shots[i]->fin();
+					/*shots.erase(shots.begin() + i);
+					i -= 1;*/
+				}
+
+				shots[i]->update(deltaTime, true);
+			}
+		}
+		for (int i = 0; i < shots.size(); i++) {
+			if (shots[i]->getDist() <= 0) {
+				shots.erase(shots.begin() + i);
+				i -= 1;
+			}
+
+		}
+
+		if (Game::instance().getKey('x'))
+		{
+			if (shotDelay == false)
+			{
+				shotDelay = true;
+				makeShot(true, true);
+			}
+			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
+		}
+		else
+		{
+			shotDelay = false;
+		}
+
+		if (Game::instance().getKey('c')) {
+			siguienteNivel = true;
+			Stage1->SiguienteNivel();
+		}
+
+
+		Stage1->update(deltaTime);
+		StageBoss->update(deltaTime);
+		if (siguienteNivel == true && Stage1->getmostrar())
+			playerVert->updateRun(deltaTime);
+		else
+		{
+			playerVert->update(deltaTime);
+		}
+		
 
 		break;
 
@@ -220,47 +290,104 @@ void Scene::update(int deltaTime)
 
 }
 
-void Scene::makeShot(bool playershot)
+void Scene::makeShot(bool playershot, bool vertical)
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
-	int direccion = player->getDireccion();
+	int direccion;
 	float posX, posY;
-	posX = player->getPositionX();
-	posY = player->getPositionY();
-	switch (player->getDireccion())
-	{
-	case RIGHT:
-		posX += 30;
-		posY += 5;
-		break;
-	
-	case LEFT:
-		posX -= 10;
-		posY += 5;
-		break;
-	case DOWN_RIGHT:
-		direccion = RIGHT;
-		posX += 30;
-		posY += 15;
-		break;
-	case RIGHT_UP:
-		posX += 20;
-		posY += 0;
-		break;
-	case LEFT_UP:
-		posX -= 5;
-		posY += 0;
-		break;
-	case UP:
-		posY -= 10;
-		break;
-	default:
-		break;
+	if (vertical) {
+
+		direccion = playerVert->getDireccion();
+
+		posX = playerVert->getPositionX();
+		posY = playerVert->getPositionY();
+	}
+	else {
+		direccion = player->getDireccion();
+
+		posX = player->getPositionX();
+		posY = player->getPositionY();
+	}
+
+	if (vertical) {
+		switch (direccion)
+		{
+		case RIGHT:
+			posX += 55;
+			posY += 5;
+			break;
+
+		case LEFT:
+			posX += 55;
+			break;
+		case DOWN_RIGHT:
+			direccion = RIGHT;
+			posX += 55;
+			posY += 20;
+			break;
+		case DOWN_LEFT:
+			direccion = LEFT;
+			posX += 55;
+			posY += 20;
+			break;
+		case RIGHT_UP:
+			posY += 0;
+			break;
+		case LEFT_UP:
+			posX += 55;
+			break;
+		case UP:
+			posY += 55;
+			break;
+		default:
+			break;
+		}
+	}
+	else {
+		switch (direccion)
+		{
+		case RIGHT:
+			posX += 30;
+			posY += 5;
+			break;
+
+		case LEFT:
+			posX -= 10;
+			posY += 5;
+			break;
+		case DOWN_RIGHT:
+			direccion = RIGHT;
+			posX += 30;
+			posY += 15;
+			break;
+		case RIGHT_UP:
+			posX += 20;
+			posY += 0;
+			break;
+		case LEFT_UP:
+			posX -= 5;
+			posY += 0;
+			break;
+		case UP:
+			posY -= 10;
+			break;
+		default:
+			break;
+		}
 	}
 	shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
 	shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
-	shots[shots.size() - 1]->setTileMap(map);
+	if (vertical) {
+		shots[shots.size() - 1]->setTileMap(mapLevel2);
+		shots[shots.size() - 1]->VerticalShot();
+	}
+	else
+		shots[shots.size() - 1]->setTileMap(map);
+
+	if (siguienteNivel)
+		shots[shots.size() - 1]->Setdist(300);
+
 	if (playershot)
 	{
 		shots[shots.size() - 1]->PlayerShot();
@@ -296,8 +423,14 @@ void Scene::render()
 
 	case Level2:
 		mapLevel2->render();
+		StageBoss->render();
+		Stage1->render();
 		playerVert->render();
+		for (int i = 0; i < shots.size(); i++) {
+			shots[i]->render();
+		}
 
+		break;
 	case Creditos:
 		mapCreditos->render();
 		break;

@@ -1,10 +1,9 @@
-#ifndef _PANTALLAINICIALJP_INCLUDE
-#define _PANTALLAINICIALJP_INCLUDE
-
+#ifndef _PANTALLALEVEL2BOSS_INCLUDE
+#define _PANTALLALEVEL2BOSS_INCLUDE
 #include "Sprite.h"
 #include "TileMap.h"
 
-class PantallaInicialJP
+class PantallaLeve2Boss
 {
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram);
@@ -16,8 +15,12 @@ public:
 private:
 	Texture spritesheet;
 	Sprite* sprite;
+
 	TileMap* map;
 	glm::ivec2 tileMapDispl;
+	bool NextLevel;
+	int delayNextLevel;
+	bool mostrar;
 };
 
-#endif 
+#endif

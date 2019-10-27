@@ -10,7 +10,7 @@ class Shot
 {
 public:
 	void init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, int Direc);
-	void update(int deltaTime);
+	void update(int deltaTime, bool vertical);
 	void render();
 
 	void setTileMap(TileMap* tileMap);
@@ -28,6 +28,10 @@ public:
 
 	void PlayerShot();
 
+	void VerticalShot();
+
+	void Setdist(int distancia);
+
 private:
 	glm::ivec2 tileMapDispl, posIni;
 	int dist, direccion;
@@ -37,6 +41,8 @@ private:
 	float offset;
 	float  ShotVx, ShotVy;
 	bool shotPlayer;
+	bool shotVertical;
+	int altura;
 	
 };
 

@@ -11,6 +11,8 @@
 #include <vector>
 #include "Enemy.h"
 #include "PantallaInicialJP.h"
+#include "PantallaLevel2Stage1.h"
+#include "PantallaLeve2Boss.h"
 
 
 // Scene contains all the entities of our game.
@@ -26,7 +28,7 @@ public:
 
 	void init();
 	void update(int deltaTime);
-	void makeShot(bool playershot);
+	void makeShot(bool playershot, bool vertical);
 	void render();
 
 	void iniNumberShots(int zero);
@@ -51,6 +53,9 @@ private:
 
 	TileMap* mapLevel2;
 	PlayerVertical *playerVert;
+	PantallaLevel2Stage1 *Stage1;
+	PantallaLeve2Boss *StageBoss;
+	bool siguienteNivel;
 
 	ShaderProgram texProgram;
 	float currentTime;

@@ -24,10 +24,11 @@ enum Dir
 void PlayerVertical::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram)
 {
 	bJumping = false;
+	posIniY = -1234;
 	profundidad = 50;
 	altura = 20; 
 	spritesheet.loadFromFile("images/PlayerVertical.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	sprite = Sprite::createSprite(glm::ivec2(64, 64), glm::vec2(0.25, 0.25), &spritesheet, &shaderProgram);
+	sprite = Sprite::createSprite(glm::ivec2(128, 128), glm::vec2(0.25, 0.25), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(10);
 
 		sprite->setAnimationSpeed(STAND_LEFT, 8);
@@ -70,12 +71,32 @@ void PlayerVertical::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderPro
 
 		sprite->setAnimationSpeed(RUN, 8);
 		sprite->addKeyframe(RUN, glm::vec2(0.5f, 0.f));
+		sprite->addKeyframe(RUN, glm::vec2(0.5f, 0.75f));
 
 		sprite->changeAnimation(1);
 		tileMapDispl = tileMapPos;
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 		jugadorVx = jugadorVy = 0;
 		direccion = RIGHT;
+}
+
+void PlayerVertical::updateRun(int deltaTime) {
+	AnimacionActual = sprite->animation();
+	sprite->update(deltaTime);
+
+	if (sprite->animation() != RUN)
+		sprite->changeAnimation(RUN);
+
+	if (posIniY == -1234)
+		posIniY = posPlayer.y;
+
+	if (posPlayer.y > (posIniY - 50))
+		posPlayer.y -= 1;
+	else
+		posPlayer.y = posIniY;
+
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+	
 }
 
 void PlayerVertical::update(int deltaTime)
@@ -91,12 +112,12 @@ void PlayerVertical::update(int deltaTime)
 		jugadorVx = -2;
 		direccion = LEFT;
 		altura = 20;
-		/*if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x += 2;
 			jugadorVx = 0;
 			sprite->changeAnimation(STAND_LEFT);
-		}*/
+		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT))
 	{
@@ -106,12 +127,12 @@ void PlayerVertical::update(int deltaTime)
 		jugadorVx = 2;
 		direccion = RIGHT;
 		altura = 20;
-		/*if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
 			jugadorVx = 0;
 			sprite->changeAnimation(STAND_RIGHT);
-		}*/
+		}
 	}
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
@@ -165,7 +186,7 @@ void PlayerVertical::update(int deltaTime)
 			jugadorVx = -2;
 		}
 
-		/*if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
 			jugadorVx = 0;
@@ -174,7 +195,7 @@ void PlayerVertical::update(int deltaTime)
 		{
 			posPlayer.x += 2;
 			jugadorVx = 0;
-		}*/
+		}
 	}
 
 
@@ -265,4 +286,9 @@ int PlayerVertical::getAnimation()
 int PlayerVertical::getDireccion()
 {
 	return direccion;
+}
+
+float PlayerVertical::getposIniY()
+{
+	return posIniY;
 }

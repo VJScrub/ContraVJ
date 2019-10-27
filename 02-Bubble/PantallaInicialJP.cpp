@@ -19,8 +19,8 @@ void PantallaInicialJP::init(const glm::ivec2& tileMapPos, ShaderProgram& shader
 
 	sprite->setAnimationSpeed(Primera, 8);
 	sprite->addKeyframe(Primera, glm::vec2(0.f, 0.f));
-	sprite->addKeyframe(Primera, glm::vec2(0.f, 0.5f));
 	sprite->addKeyframe(Primera, glm::vec2(0.5f, 0.f));
+	sprite->addKeyframe(Primera, glm::vec2(0.f, 0.5f));
 	sprite->addKeyframe(Primera, glm::vec2(0.5f, 0.5f));
 
 	sprite->changeAnimation(0);
