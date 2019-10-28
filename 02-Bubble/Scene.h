@@ -1,7 +1,6 @@
 #ifndef _SCENE_INCLUDE
 #define _SCENE_INCLUDE
 
-
 #include <glm/glm.hpp>
 #include "ShaderProgram.h"
 #include "TileMap.h"
@@ -13,6 +12,11 @@
 #include "PantallaInicialJP.h"
 #include "PantallaLevel2Stage1.h"
 #include "PantallaLeve2Boss.h"
+#include "EnemyStage2Key.h"
+#include "Boss.h"
+#include <stdio.h>
+#include <irrKlang.h>
+#pragma comment(lib, "irrKlang.lib")
 
 
 // Scene contains all the entities of our game.
@@ -40,6 +44,10 @@ private:
 
 	void newEnemy();
 
+	void newEnemyKey();
+
+	void changeSound(int _estado);
+
 
 private:
 	TileMap* mapPantallaInicial;
@@ -56,6 +64,10 @@ private:
 	PantallaLevel2Stage1 *Stage1;
 	PantallaLeve2Boss *StageBoss;
 	bool siguienteNivel;
+	vector<EnemyStage2Key*> enemiesKey;
+	Boss *finalboss;
+
+	irrklang::ISoundEngine* engine;
 
 	ShaderProgram texProgram;
 	float currentTime;
@@ -65,6 +77,7 @@ private:
 	bool shotDelay;
 	bool creditosDelay;
 	int Estado;
+	int shotBossDelay;
 };
 
 
