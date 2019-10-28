@@ -11,7 +11,6 @@
 #include "PantallaInicialJP.h"
 #include "PantallaLevel2Stage1.h"
 
-
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
@@ -55,6 +54,11 @@ void Scene::init()
 {
 	Estado = Pantalla_Inicial;
 
+
+	engine = irrklang::createIrrKlangDevice();
+	changeSound(Estado);
+	
+
 	initShaders();
 	//Pantalla Inicial
 	mapPantallaInicial = TileMap::createTileMap("levels/PantallaInicial.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -85,8 +89,18 @@ void Scene::init()
 	StageBoss = new PantallaLeve2Boss();
 	StageBoss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	siguienteNivel = false;
-	
-		
+	newEnemyKey();
+	enemiesKey[enemiesKey.size() - 1] = new EnemyStage2Key();
+	enemiesKey[enemiesKey.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemiesKey[enemiesKey.size() - 1]->setPosition(glm::vec2(15 * mapLevel2->getTileSize(), 13.52 * mapLevel2->getTileSize()));
+	enemiesKey[enemiesKey.size() - 1]->setTileMap(mapLevel2);
+	enemiesKey[enemiesKey.size() - 1]->setVidas(50);
+	finalboss = new Boss;
+	finalboss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	finalboss->setPosition(glm::vec2(13.9 * mapLevel2->getTileSize(), 4.2 * mapLevel2->getTileSize()));
+	finalboss->setTileMap(mapLevel2);
+	finalboss->setVidas(50);
+
 	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
 	cameraX = float(SCREEN_WIDTH - 1);
 	cameraY = float(SCREEN_HEIGHT - 1);
@@ -94,6 +108,8 @@ void Scene::init()
 	currentTime = 0.0f;
 	creditosDelay = 0;
 	shotDelay = true;
+
+	shotBossDelay = 100;
 
 }
 
@@ -107,6 +123,7 @@ void Scene::update(int deltaTime)
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
+		
 		pijp->update(deltaTime);
 		if (Game::instance().getKey('c'))
 		{
@@ -121,6 +138,8 @@ void Scene::update(int deltaTime)
 		if (Game::instance().getKey('x'))
 		{
 			Estado = Level1;
+			Estado = Level2;
+			changeSound(Estado);
 		}
 
 		break;
@@ -216,29 +235,86 @@ void Scene::update(int deltaTime)
 
 
 	case Level2:
+
+	
 		currentTime += deltaTime;
+
+		finalboss->update(deltaTime);
+
+		if (finalboss->getMostrar() && shotBossDelay < 0) {
+			shotBossDelay = 100;
+			newShot();
+			shots[shots.size() - 1] = new Shot();
+			shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 0);
+			shots[shots.size() - 1]->BossShot();
+			shots[shots.size() - 1]->setPosition(glm::vec2(finalboss->getPositionX(), finalboss->getPositionY()));
+			shots[shots.size() - 1]->setTileMap(mapLevel2);
+			shots[shots.size() - 1]->VerticalShot();
+			
+			shots[shots.size() - 1]->Setdist(300);
+		}
+		else
+			shotBossDelay -= 1;
+		for (int i = 0; i < enemiesKey.size(); i++) {
+			enemiesKey[i]->update(deltaTime);
+			if (enemiesKey[i]->final()) {
+				enemiesKey.erase(enemiesKey.begin() + i);
+				i -= 1;
+			}
+		}
 
 		for (int k = 0; k < 6; k++) {
 			for (int i = 0; i < shots.size(); i++) {
-
-				for (int j = 0; j < enemies.size(); j++) {
-					if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
-						enemies[j]->muerteEnemyPersona();
+				if (!shots[i]->getBossShot() && finalboss->getMostrar()) {
+					if (finalboss->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						if (finalboss->getVidas() == 0) {
+							init();
+							Estado = Creditos;
+							changeSound(Estado);
+						}
+						else
+							finalboss->setVidas(finalboss->getVidas() - 1);
 					}
 				}
 
-				if (mapLevel2->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
+
+				for (int j = 0; j < enemiesKey.size(); j++) {
+					if (enemiesKey[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						if (enemiesKey[j]->getVidas() == 0) {
+							enemiesKey[j]->muerteEnemyPersona();
+							siguienteNivel = true;
+							Stage1->SiguienteNivel();
+						}
+						else
+							enemiesKey[j]->setVidas(enemiesKey[j]->getVidas() - 1);
+					}
+				}
+
+				if (shots[i]->getBossShot()) {
+					for (int j = 0; j < shots.size(); j++) {
+						if (!shots[j]->getBossShot()) {
+							if (shots[i]->hurted(shots[j]->getPositionX(), shots[j]->getPositionY()))
+								shots[i]->Setdist(0);
+						}
+					}
+				}
+
+				if (!shots[i]->getBossShot() && mapLevel2->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
 				{
 					shots[i]->fin();
 					/*shots.erase(shots.begin() + i);
 					i -= 1;*/
 				}
+				if (shots[i]->getBossShot() && (k / 2 == 0)) {
+					shots[i]->update(deltaTime, true);
+				}
+				else 
+					shots[i]->update(deltaTime, true);
 
-				shots[i]->update(deltaTime, true);
 			}
 		}
 		for (int i = 0; i < shots.size(); i++) {
-			if (shots[i]->getDist() <= 0) {
+			if (shots[i]->getDist() <= 0  ) {
 				shots.erase(shots.begin() + i);
 				i -= 1;
 			}
@@ -286,12 +362,17 @@ void Scene::update(int deltaTime)
 	//	cameraY = y + cameraY;
 	//	cameraY -= 2 * SCREEN_Y / 3;
 	//}
+
+
 		Stage1->update(deltaTime);
 		StageBoss->update(deltaTime);
 		if (siguienteNivel == true && Stage1->getmostrar())
 			playerVert->updateRun(deltaTime);
 		else
 		{
+			if (siguienteNivel == true) {
+				finalboss->setMostrar(true);
+			}
 			playerVert->update(deltaTime);
 		}
 		
@@ -300,11 +381,12 @@ void Scene::update(int deltaTime)
 
 	case Creditos:
 		
-		if (Game::instance().getKey('c'))
+		if (Game::instance().getKey('x'))
 		{
 			if (creditosDelay == false) {
 				creditosDelay = true;
 				Estado = Pantalla_Inicial;
+				changeSound(Estado);
 			}
 			
 		}
@@ -453,11 +535,14 @@ void Scene::render()
 		mapLevel2->render();
 		StageBoss->render();
 		Stage1->render();
+		finalboss->render();
 		playerVert->render();
 		for (int i = 0; i < shots.size(); i++) {
 			shots[i]->render();
 		}
-
+		for (int i = 0; i < enemiesKey.size(); i++) {
+			enemiesKey[i]->render();
+		}
 		break;
 	case Creditos:
 		mapCreditos->render();
@@ -552,9 +637,40 @@ void Scene::initEnemies(const string& enemiesFile)
 
 
 
+
 void Scene::newEnemy()
 {
 	enemies.resize(enemies.size() + 1);
 }
 
+void Scene::newEnemyKey()
+{
+	enemiesKey.resize(enemiesKey.size() + 1);
+}
+
+
+void Scene::changeSound(int _estado) {
+
+	switch (Estado)
+	{
+	case Pantalla_Inicial:
+		engine->removeAllSoundSources();
+		engine->play2D("sounds/01_-_Contra_-_NES_-_Title.ogg",true);
+		break;
+	case Level1:
+		engine->removeAllSoundSources();
+		engine->play2D("sounds/03_-_Contra_-_NES_-_Jungle.ogg", true);
+		break;
+	case Level2:
+		engine->removeAllSoundSources();
+		engine->play2D("sounds/04_-_Contra_-_NES_-_Bases.ogg",true);
+		break;
+	case Creditos:
+		engine->removeAllSoundSources();
+		engine->play2D("sounds/13_-_Contra_-_NES_-_Victory.ogg", true);
+		break;
+	default:
+		break;
+	}
+}
 

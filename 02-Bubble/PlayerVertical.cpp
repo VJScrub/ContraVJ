@@ -166,7 +166,7 @@ void PlayerVertical::update(int deltaTime)
 			sprite->changeAnimation(STAND_LEFT);
 			direccion = LEFT;
 		}
-		else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == MOVE_RIGHT_UP || sprite->animation() == DOWN_RIGHT) {
+		else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == MOVE_RIGHT_UP || sprite->animation() == DOWN_RIGHT || sprite->animation() == RUN) {
 			sprite->changeAnimation(STAND_RIGHT);
 			direccion = RIGHT;
 		}

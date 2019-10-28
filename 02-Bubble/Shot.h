@@ -32,17 +32,28 @@ public:
 
 	void Setdist(int distancia);
 
+	void BossShot();
+
+	bool getBossShot();
+
+	bool hurted(float x, float y);
+
 private:
 	glm::ivec2 tileMapDispl, posIni;
 	int dist, direccion;
 	Texture spritesheet;
 	Sprite* sprite;
 	TileMap* map;
+	Texture spritesheetBoss;
+	Sprite* spriteBoss;
 	float offset;
 	float  ShotVx, ShotVy;
 	bool shotPlayer;
+	bool shotBoss;
 	bool shotVertical;
 	int altura;
+
+	bool PrimerSonido;
 	
 };
 
