@@ -18,6 +18,7 @@ enum EnemyAnims
 void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	bJumping = false;
+	muerto = false;
 	spritesheet.loadFromFile("images/runenemies.png", TEXTURE_PIXEL_FORMAT_RGBA);
     // crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
 	sprite = Sprite::createSprite(glm::ivec2(16, 32), glm::vec2(0.25, 0.5), &spritesheet, &shaderProgram);
@@ -42,80 +43,127 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+
+
+	spritesheetMuerto.loadFromFile("images/muerteEnemigo.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	// crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
+	spriteMuerto = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.5, 0.5), &spritesheetMuerto, &shaderProgram);
+	spriteMuerto->setNumberAnimations(3);
+
+	spriteMuerto->setAnimationSpeed(0, 8);
+	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
+
+	spriteMuerto->setAnimationSpeed(1, 8);
+	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
+	spriteMuerto->addKeyframe(1, glm::vec2(0.f, 0.5f));
+
+	spriteMuerto->setAnimationSpeed(2, 8);
+	spriteMuerto->addKeyframe(0, glm::vec2(0.f, 0.f));
+	spriteMuerto->addKeyframe(1, glm::vec2(0.f, 0.5f));
+	spriteMuerto->addKeyframe(2, glm::vec2(0.5, 0.f));
+
+	spriteMuerto->changeAnimation(0);
+	spriteMuerto->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+
+	DelayMuerte = 8;
+	fin = false;
 }
 
 void Enemy::update(int deltaTime)
 {
+
 	sprite->update(deltaTime);
 
-	if (sprite->animation() == MOVE_LEFT) {
-		posEnemy.x -= 2;
-		if (map->collisionMoveLeft(posEnemy, glm::ivec2(16, 32)))
-		{
-			posEnemy.x += 2;
-			if (!bJumping)
-			{
-				sprite->changeAnimation(STAND_LEFT);
-				bJumping = true;
-				jumpAngle = 0;
-				startY = posEnemy.y;
-			}
-		}
-		posEnemy.y += FALL_STEP;
-		if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) 
-		{
-			posEnemy.x += 4;
-			sprite->changeAnimation(MOVE_RIGHT);
-		}
-		posEnemy.y -= FALL_STEP;
-	}
-	if (sprite->animation() == MOVE_RIGHT)
-	{
-		posEnemy.x += 2;
-		if (map->collisionMoveRight(posEnemy, glm::ivec2(16, 32)))
-		{
-			posEnemy.x -= 2;
-			sprite->changeAnimation(MOVE_LEFT);
-		}
-		posEnemy.y += FALL_STEP;
-		if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) {
-			posEnemy.x -= 2;
-			sprite->changeAnimation(MOVE_LEFT);
-		}
-		posEnemy.y -= FALL_STEP;
-	}
 	
-
-	if (bJumping)
+	if (muerto == true)
 	{
-		jumpAngle += JUMP_ANGLE_STEP;
-		if (jumpAngle == 180)
-		{
-			bJumping = false;
-			posEnemy.y = startY;
+		if (spriteMuerto->animation() == 0 && DelayMuerte == 0) {
+			DelayMuerte = 8;
+			spriteMuerto->changeAnimation(1);
 		}
+		else if (spriteMuerto->animation() == 1 && DelayMuerte == 0) {
+			DelayMuerte = 8;
+			spriteMuerto->changeAnimation(2);
+		}
+		else if (spriteMuerto->animation() == 2 && DelayMuerte == 0)
+			fin = true;
 		else
-		{
-			posEnemy.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
-			if (jumpAngle > 90)
-				bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y);
-		}
+			DelayMuerte -= 1;
+		spriteMuerto->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+
 	}
 	else
 	{
-		posEnemy.y += FALL_STEP;
-		if (map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
-		{
-			if (sprite->animation() == STAND_LEFT)
-				sprite->changeAnimation(MOVE_LEFT);
+		if (sprite->animation() == MOVE_LEFT) {
+			posEnemy.x -= 2;
+			if (map->collisionMoveLeft(posEnemy, glm::ivec2(16, 32)))
+			{
+				posEnemy.x += 2;
+				if (!bJumping)
+				{
+					sprite->changeAnimation(STAND_LEFT);
+					bJumping = true;
+					jumpAngle = 0;
+					startY = posEnemy.y;
+				}
+			}
+			posEnemy.y += FALL_STEP;
+			if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
+			{
+				posEnemy.x += 4;
+				sprite->changeAnimation(MOVE_RIGHT);
+			}
+			posEnemy.y -= FALL_STEP;
 		}
-	}
-	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
-}
+		if (sprite->animation() == MOVE_RIGHT)
+		{
+			posEnemy.x += 2;
+			if (map->collisionMoveRight(posEnemy, glm::ivec2(16, 32)))
+			{
+				posEnemy.x -= 2;
+				sprite->changeAnimation(MOVE_LEFT);
+			}
+			posEnemy.y += FALL_STEP;
+			if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) {
+				posEnemy.x -= 2;
+				sprite->changeAnimation(MOVE_LEFT);
+			}
+			posEnemy.y -= FALL_STEP;
+		}
 
+		if (bJumping)
+		{
+			jumpAngle += JUMP_ANGLE_STEP;
+			if (jumpAngle == 180)
+			{
+				bJumping = false;
+				posEnemy.y = startY;
+			}
+			else
+			{
+				posEnemy.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
+				if (jumpAngle > 90)
+					bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y);
+			}
+		}
+		else
+		{
+			posEnemy.y += FALL_STEP;
+			if (map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
+			{
+				if (sprite->animation() == STAND_LEFT)
+					sprite->changeAnimation(MOVE_LEFT);
+			}
+		}
+		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+	}
+}
 void Enemy::render()
 {
-	sprite->render();
+	if (muerto == true)
+		spriteMuerto->render();
+	else
+		sprite->render();
 }
 
 void Enemy::setTileMap(TileMap* tileMap)
@@ -127,6 +175,7 @@ void Enemy::setPosition(const glm::vec2& pos)
 {
 	posEnemy = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+	//spriteMuerto->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 }
 
 int Enemy::getPositionX() 
@@ -137,4 +186,24 @@ int Enemy::getPositionX()
 int Enemy::getPositionY()
 {
 	return posEnemy.y;
+}
+
+bool Enemy::hurted(float x, float y)
+{
+	if ((x < (posEnemy.x + 16 ) && x > posEnemy.x) && (y > posEnemy.y && y < posEnemy.y + 32 ))
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
+void Enemy::muerteEnemyPersona()
+{
+	muerto = true;
+}
+
+bool Enemy::final()
+{
+	return fin;
 }

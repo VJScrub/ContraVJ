@@ -22,13 +22,24 @@ public:
 
 	int getPositionY();
 
+	bool hurted(float x, float y);
+
+	void muerteEnemyPersona();
+
+	bool final();
+
 private:
 	bool bJumping;
 	glm::ivec2 tileMapDispl, posEnemy;
 	int jumpAngle, startY;
 	Texture spritesheet;
+	Texture spritesheetMuerto;
 	Sprite* sprite;
+	Sprite* spriteMuerto;
 	TileMap* map;
+	bool muerto;
+	int DelayMuerte;
+	bool fin;
 };
 
 #endif // _ENEMY_INCLUDE

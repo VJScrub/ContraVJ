@@ -1,0 +1,6 @@
+TILEMAP
+1 1 							-- Size of tile map in tiles
+512 512						-- Tile size & block size  	
+images/fondoNegro256.png 	-- Tilesheet
+1 1 								-- Number of tiles in tilesheet
+1

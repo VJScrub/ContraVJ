@@ -22,10 +22,10 @@ void Shot::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, int 
 	sprite->addKeyframe(0, glm::vec2(0.f, 0.f));
 
 	sprite->setAnimationSpeed(1, 8);
-	sprite->addKeyframe(1, glm::vec2(0.25, 0.f));
 	sprite->addKeyframe(1, glm::vec2(0.25, 0.25f));
 	sprite->addKeyframe(1, glm::vec2(0.25, 0.5f));
 
+	
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posIni.x), float(tileMapDispl.y + posIni.y)));
@@ -33,26 +33,70 @@ void Shot::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, int 
 
 	direccion = Direcc;
 	dist = 1000; //Distancia que la bala vive
+
+	shotPlayer = false;
+	shotVertical = false;
+	altura = 20;
 }
 
-void Shot::update(int deltaTime)
+void Shot::update(int deltaTime, bool vertical)
 {
 	sprite->update(deltaTime);
 	dist -= 1;
-
-	switch (direccion)
-	{
-	case RIGHT:
-		posIni.x += 1;
-		break;
-	case LEFT:
-		posIni.x -= 1;
-		break;
-
-	default:
-		break;
+	
+	if (vertical) {
+		switch (direccion)
+		{
+		case RIGHT:
+			posIni.y -= 0.25f;
+			break;
+		case LEFT:
+			posIni.y -= 0.25f;
+			break;
+		case RIGHT_UP:
+			posIni.y -= 0.25f;
+			break;
+		case LEFT_UP:
+			posIni.y -= 0.25f;
+			break;
+		case UP:
+			posIni.y -= 0.25f;
+			break;
+		case DOWN:
+			posIni.y -= 0.25f;
+			altura = 0;
+			break;
+		default:
+			break;
+		}
 	}
-
+	else {
+		switch (direccion)
+		{
+		case RIGHT:
+			posIni.x += 1;
+			break;
+		case LEFT:
+			posIni.x -= 1;
+			break;
+		case RIGHT_UP:
+			posIni.x += 1;
+			posIni.y -= 1;
+			break;
+		case LEFT_UP:
+			posIni.x -= 1;
+			posIni.y -= 1;
+			break;
+		case UP:
+			posIni.y -= 1;
+			break;
+		case DOWN:
+			posIni.y += 1;
+			break;
+		default:
+			break;
+		}
+	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posIni.x), float(tileMapDispl.y + posIni.y)));
 }
 
@@ -96,4 +140,20 @@ glm::ivec2 Shot::getPosition()
 void Shot::fin()
 {
 	sprite->changeAnimation(1);
+}
+
+void Shot::PlayerShot()
+{
+	shotPlayer = true;
+}
+
+void Shot::VerticalShot()
+{
+	shotVertical = true;
+	dist = 50;
+}
+
+void Shot::Setdist(int distancia)
+{
+	dist = distancia;
 }
