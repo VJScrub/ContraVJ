@@ -48,13 +48,16 @@ private:
 
 	void changeSound(int _estado);
 
+	void iniciar();
+
 
 private:
 	TileMap* mapPantallaInicial;
 	PantallaInicialJP *pijp;
 	
 	TileMap* mapCreditos;
-	
+	TileMap* mapIns;
+
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
@@ -78,6 +81,8 @@ private:
 	bool creditosDelay;
 	int Estado;
 	int shotBossDelay;
+	bool InsDelay;
+	bool PIDelay;
 };
 
 

@@ -29,14 +29,21 @@ public:
 	int getTileSize() const { return tileSize; }
 
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
+	bool collisionMoveRight2(const glm::ivec2& pos, const glm::ivec2& size) const;
+	bool collisionMoveDown2(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const;
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
 
 	glm::ivec2 returnMapSize();
+
+	bool collisionMoveLeft2(const glm::ivec2& pos, const glm::ivec2& size) const;
 	
 private:
 	bool loadLevel(const string &levelFile);
+	bool loadLevel2(const string& levelFile);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
+
+	void prepareArrays2(const glm::vec2& minCoords, ShaderProgram& program);
 
 private:
 	GLuint vao;

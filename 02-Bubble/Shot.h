@@ -53,8 +53,6 @@ private:
 	bool shotVertical;
 	int altura;
 
-	bool PrimerSonido;
-	
 };
 
 #endif

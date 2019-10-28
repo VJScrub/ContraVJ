@@ -13,12 +13,12 @@
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 4
+#define INIT_PLAYER_X_TILES 20
 #define INIT_PLAYER_Y_TILES 21
 
 enum CicloVida
 {
-	Pantalla_Inicial, Level1, Level2, Creditos
+	Pantalla_Inicial, Level1, Level2, Creditos, Intrucciones
 };
 
 enum PlayerAnims
@@ -53,63 +53,15 @@ Scene::~Scene()
 void Scene::init()
 {
 	Estado = Pantalla_Inicial;
-
-
+	PIDelay = false;
 	engine = irrklang::createIrrKlangDevice();
+	
 	changeSound(Estado);
+
 	
 
 	initShaders();
-	//Pantalla Inicial
-	mapPantallaInicial = TileMap::createTileMap("levels/PantallaInicial.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	pijp = new PantallaInicialJP();
-	pijp->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	pijp->setTileMap(mapPantallaInicial);
-
-	//Creditos
-	mapCreditos = TileMap::createTileMap("levels/Creditos.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-
-
-	//Level1  
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	initEnemies("levels/level01enemies.txt");
-	player = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize()/2, INIT_PLAYER_Y_TILES * map->getTileSize()/2));
-	player->setTileMap(map);
-	
-	//Level2
-	mapLevel2 = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	playerVert = new PlayerVertical();
-	playerVert->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	playerVert->setPosition(glm::vec2(INIT_PLAYER_X_TILES * mapLevel2->getTileSize() / 2, INIT_PLAYER_Y_TILES * mapLevel2->getTileSize() / 2));
-	playerVert->setTileMap(mapLevel2);
-	Stage1 = new PantallaLevel2Stage1();
-	Stage1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	StageBoss = new PantallaLeve2Boss();
-	StageBoss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	siguienteNivel = false;
-	newEnemyKey();
-	enemiesKey[enemiesKey.size() - 1] = new EnemyStage2Key();
-	enemiesKey[enemiesKey.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	enemiesKey[enemiesKey.size() - 1]->setPosition(glm::vec2(15 * mapLevel2->getTileSize(), 13.52 * mapLevel2->getTileSize()));
-	enemiesKey[enemiesKey.size() - 1]->setTileMap(mapLevel2);
-	enemiesKey[enemiesKey.size() - 1]->setVidas(50);
-	finalboss = new Boss;
-	finalboss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	finalboss->setPosition(glm::vec2(13.9 * mapLevel2->getTileSize(), 4.2 * mapLevel2->getTileSize()));
-	finalboss->setTileMap(mapLevel2);
-	finalboss->setVidas(50);
-
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
-	cameraX = float(SCREEN_WIDTH - 1);
-	cameraY = float(SCREEN_HEIGHT - 1);
-	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
-	currentTime = 0.0f;
-	creditosDelay = 0;
-	shotDelay = true;
-	
-	shotBossDelay = 100;
+	iniciar();
 
 
 }
@@ -126,20 +78,26 @@ void Scene::update(int deltaTime)
 	case Pantalla_Inicial:
 		
 		pijp->update(deltaTime);
-		if (Game::instance().getKey('c'))
+		if (Game::instance().getKey('i'))
 		{
-			if (creditosDelay == false) {
-				creditosDelay = true;
-				Estado = Creditos;
+			if (InsDelay == false) {
+				InsDelay = true;
+				Estado = Intrucciones;
 			}
 		}
 		else
-			creditosDelay = false;
+			InsDelay = false;
 		
-		if (Game::instance().getKey('x'))
+
+
+		if (Game::instance().getKey(32) && PIDelay == false)
 		{
-			Estado = Level2;
+			Estado = Level1;
 			changeSound(Estado);
+		}
+		else {
+
+			PIDelay = false;
 		}
 
 		break;
@@ -153,11 +111,12 @@ void Scene::update(int deltaTime)
 
 				for (int j = 0; j < enemies.size(); j++) {
 					if (enemies[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						shots[i]->Setdist(0);
 						enemies[j]->muerteEnemyPersona();
 					}
 				}
 
-				if (map->collisionMoveLeft(shots[i]->getPosition(), glm::ivec2(8, 8)))
+				if (map->collisionMoveLeft2(shots[i]->getPosition(), glm::ivec2(8, 8)))
 				{
 					shots[i]->fin();
 					/*shots.erase(shots.begin() + i);
@@ -261,8 +220,10 @@ void Scene::update(int deltaTime)
 			for (int i = 0; i < shots.size(); i++) {
 				if (!shots[i]->getBossShot() && finalboss->getMostrar()) {
 					if (finalboss->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
+						shots[i]->Setdist(0);
 						if (finalboss->getVidas() == 0) {
-							init();
+							iniciar();
+							creditosDelay = true;
 							Estado = Creditos;
 							changeSound(Estado);
 						}
@@ -351,6 +312,7 @@ void Scene::update(int deltaTime)
 		{
 			if (creditosDelay == false) {
 				creditosDelay = true;
+				PIDelay = true;
 				Estado = Pantalla_Inicial;
 				changeSound(Estado);
 			}
@@ -358,6 +320,16 @@ void Scene::update(int deltaTime)
 		}
 		else
 			creditosDelay = false;
+		break;
+	case Intrucciones:
+		if (Game::instance().getKey('i')) {
+			if (InsDelay == false) {
+				InsDelay = true;
+				Estado = Pantalla_Inicial;
+			}		
+		}
+		else
+			InsDelay = false;
 		break;
 	}
 
@@ -370,6 +342,8 @@ void Scene::makeShot(bool playershot, bool vertical)
 	shots[shots.size() - 1] = new Shot();
 	int direccion;
 	float posX, posY;
+	if (playershot)
+		engine->play2D("sounds/Contra SFX (4).wav");
 	if (vertical) {
 
 		direccion = playerVert->getDireccion();
@@ -511,6 +485,9 @@ void Scene::render()
 	case Creditos:
 		mapCreditos->render();
 		break;
+	case Intrucciones:
+		mapIns->render();
+		break;
 	}
 		
 }
@@ -635,4 +612,62 @@ void Scene::changeSound(int _estado) {
 	default:
 		break;
 	}
+}
+
+void Scene::iniciar() {
+
+
+	//Pantalla Inicial
+	mapPantallaInicial = TileMap::createTileMap("levels/PantallaInicial.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	pijp = new PantallaInicialJP();
+	pijp->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	pijp->setTileMap(mapPantallaInicial);
+
+	//Creditos
+	mapCreditos = TileMap::createTileMap("levels/Creditos.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
+	//Instrucciones
+	mapIns = TileMap::createTileMap("levels/Instrucciones.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+
+	//Level1  
+	map = TileMap::createTileMap("levels/level01P.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	initEnemies("levels/level01enemies.txt");
+	player = new Player();
+	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() / 2, INIT_PLAYER_Y_TILES * map->getTileSize() / 2));
+	player->setTileMap(map);
+
+	//Level2
+	mapLevel2 = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	playerVert = new PlayerVertical();
+	playerVert->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	playerVert->setPosition(glm::vec2(INIT_PLAYER_X_TILES * mapLevel2->getTileSize() / 2, INIT_PLAYER_Y_TILES * mapLevel2->getTileSize() / 2));
+	playerVert->setTileMap(mapLevel2);
+	Stage1 = new PantallaLevel2Stage1();
+	Stage1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	StageBoss = new PantallaLeve2Boss();
+	StageBoss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	siguienteNivel = false;
+	newEnemyKey();
+	enemiesKey[enemiesKey.size() - 1] = new EnemyStage2Key();
+	enemiesKey[enemiesKey.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	enemiesKey[enemiesKey.size() - 1]->setPosition(glm::vec2(15 * mapLevel2->getTileSize(), 13.52 * mapLevel2->getTileSize()));
+	enemiesKey[enemiesKey.size() - 1]->setTileMap(mapLevel2);
+	enemiesKey[enemiesKey.size() - 1]->setVidas(50);
+	finalboss = new Boss;
+	finalboss->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	finalboss->setPosition(glm::vec2(13.9 * mapLevel2->getTileSize(), 4.2 * mapLevel2->getTileSize()));
+	finalboss->setTileMap(mapLevel2);
+	finalboss->setVidas(50);
+
+	projection = glm::ortho(0.f, float(SCREEN_WIDTH - 1), float(SCREEN_HEIGHT - 1), 0.f);
+	cameraX = float(SCREEN_WIDTH - 1);
+	cameraY = float(SCREEN_HEIGHT - 1);
+	projection = glm::ortho(0.f, cameraX, cameraY, 0.f);
+	currentTime = 0.0f;
+	creditosDelay = 0;
+	shotDelay = true;
+	InsDelay = false;
+	shotBossDelay = 100;
+
 }
