@@ -38,7 +38,7 @@ void SpreadGun::setTileMap(TileMap* tileMap)
 
 bool SpreadGun::hurted(float x, float y)
 {
-	if ((x < (posIni.x + 32) && x > posIni.x) && (y > posIni.y && y < posIni.y + 32))
+	if ((x > (posIni.x - 32) && x < posIni.x) && (y < posIni.y && y > posIni.y - 32))
 	{
 		return true;
 	}

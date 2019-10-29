@@ -92,7 +92,7 @@ void Scene::update(int deltaTime)
 
 		if (Game::instance().getKey(32) && PIDelay == false)
 		{
-			Estado = Level2;
+			Estado = Level1;
 			changeSound(Estado);
 		}
 		else {
@@ -107,6 +107,12 @@ void Scene::update(int deltaTime)
 		currentTime += deltaTime;
 		player->update(deltaTime);
 		sp->update(deltaTime);
+
+		if (player->getPositionX() > 3356) {
+			iniciar();
+			Estado = Level2;
+			break;
+		}
 
 		if (sp->hurted(player->getPositionX(), player->getPositionY())) {
 			sp->setfinal();
