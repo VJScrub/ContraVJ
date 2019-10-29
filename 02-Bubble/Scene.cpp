@@ -56,7 +56,8 @@ void Scene::init()
 	Estado = Pantalla_Inicial;
 	PIDelay = false;
 	engine = irrklang::createIrrKlangDevice();
-	
+	pymuerto = false();
+
 	changeSound(Estado);
 
 	initShaders();
@@ -72,12 +73,15 @@ void Scene::update(int deltaTime)
 	int y = player->getPositionY();
 	float vx = player->getVX();
 	float vy = player->getVY();
+
 	bool auxb = true;
 	int auxvidas;
+
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
-		
+
+		player->recover();
 		pijp->update(deltaTime);
 		if (Game::instance().getKey('i'))
 		{
@@ -90,11 +94,13 @@ void Scene::update(int deltaTime)
 			InsDelay = false;
 		
 
-
-		if (Game::instance().getKey(32) && PIDelay == false)
+		
+		if (Game::instance().getKey(32))
 		{
-			Estado = Level1;
-			changeSound(Estado);
+			if (!PIDelay) {
+				Estado = Level1;
+				changeSound(Estado);
+			}			
 		}
 		else {
 
@@ -104,6 +110,7 @@ void Scene::update(int deltaTime)
 		break;
 	case Level1:
 		
+
 
 		currentTime += deltaTime;
 		player->update(deltaTime);
@@ -121,6 +128,7 @@ void Scene::update(int deltaTime)
 			sp->setfinal();
 			player->SetSpreadGunTrue();
 		}
+
 
 
 		for (int k = 0; k < 6; k++) {
@@ -161,6 +169,7 @@ void Scene::update(int deltaTime)
 				act = false;
 				player_x = player->getPositionX();
 				player_y = player->getPositionY();
+
 				if (current_x - player_x < 5 * map->getTileSize() && current_x - player_x > 0)
 					act = true;
 				enemies[i]->update(deltaTime, act);
@@ -175,12 +184,6 @@ void Scene::update(int deltaTime)
 					makeShotEnemy(false, false, posX, posY, direccion);
 
 
-
-				}
-
-
-
-				if (enemies[i]->getType() == 2) {
 
 				}
 				if (enemies[i]->final()) {
@@ -231,12 +234,10 @@ void Scene::update(int deltaTime)
 		//	cameraY = y + cameraY;
 		//	cameraY -= 2 * SCREEN_Y / 3;
 		//}
+
 		projection = glm::ortho(cameraX - SCREEN_WIDTH, cameraX, cameraY, 0.f);
 
-		for (int i = 0; i < vidas.size(); i++) {
-			if (vidas[i]->getMostrar())
-				vidas[i]->render();
-		}
+		
 		break;
 
 
@@ -246,7 +247,6 @@ void Scene::update(int deltaTime)
 		currentTime += deltaTime;
 
 		finalboss->update(deltaTime);
-
 		if (finalboss->getMostrar() && shotBossDelay < 0) {
 			shotBossDelay = 100;
 			newShot();
@@ -394,6 +394,7 @@ void Scene::update(int deltaTime)
 			if (shotDelay == false)
 			{
 				shotDelay = true;
+
 				makeShot(true, true);
 			}
 			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
@@ -441,6 +442,8 @@ void Scene::update(int deltaTime)
 			if (vidas[i]->getMostrar())
 				vidas[i]->render();
 		}
+		player_status2(playerVert->getPositionX(), playerVert->getPositionY());
+
 		break;
 
 	case Creditos:
@@ -470,12 +473,12 @@ void Scene::update(int deltaTime)
 		break;
 	case Continue:
 		if (Game::instance().getKey(32)) {
-			if (InsDelay == false) {
-				InsDelay = true;
+			if (PIDelay == false) {
+				PIDelay = true;
 				Estado = Pantalla_Inicial;
 			}
 		}
-		else if (Game::instance().getKey(32)) {
+		else if (Game::instance().getKey('x')) {
 			Estado = Level1;
 		}
 		else
@@ -492,6 +495,7 @@ void Scene::makeShot(bool playershot, bool vertical)
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
+
 	int direccion;
 	float posX, posY;
 	if (playershot)
@@ -629,8 +633,8 @@ void Scene::makeShot(bool playershot, bool vertical)
 }
 
 
-
 void Scene::makeShotEnemy(bool playershot, bool vertical, float posX, float posY, int direccion)
+
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
@@ -753,7 +757,6 @@ void Scene::makeShotEnemy(bool playershot, bool vertical, float posX, float posY
 
 }
 
-
 void Scene::render()
 {
 	glm::mat4 modelview;
@@ -818,10 +821,7 @@ void Scene::render()
 		mapContinue->render();
 		break;
 	}
-	for (int i = 0; i < vidas.size(); i++) {
-		if (vidas[i]->getMostrar())
-		vidas[i]->render();
-	}
+
 		
 }
 
@@ -830,11 +830,29 @@ void Scene::player_status(int playerx, int playery) {
 		if (enemies[i]->collision(playerx, playery, glm::ivec2(16, 32)))
 		{
 			if (!enemies[i]->getMuerto() && player->die()) {
-				Estado = Creditos;
+				pymuerto = true;
+				iniciar();
+				Estado = Continue;
 			}
 			enemies[i]->muerteEnemyPersona();
 		}
 
+	}
+}
+
+void Scene::player_status2(int playerx, int playery) {
+	for (int i = 0; i < shots.size(); i++) {
+		if (!shots[i]->getPlayerShot()) {
+			if (shots[i]->hurted(playerx, playery))
+			{
+				playerVert->setvidas(playerVert->getvidas());
+				shots[i]->Setdist(0);
+				if (playerVert->getvidas() == 0) {
+					iniciar();
+					Estado = Continue;
+				}				
+			}
+		}
 	}
 }
 

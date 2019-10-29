@@ -64,8 +64,9 @@ void Shot::update(int deltaTime, bool vertical)
 	dist -= 1;
 	if (!shotBoss) {
 		if (vertical) {
-			if (shotPlayer == false)
+			if (shotPlayer == false) {
 				posIni.y += 1;
+			}
 			else {
 				switch (direccion)
 				{

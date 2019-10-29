@@ -36,6 +36,8 @@ public:
 
 	bool collision(int x, int y, const glm::ivec2& size);
 
+	bool time_shot();
+
 private:
 	bool bJumping;
 	glm::ivec2 tileMapDispl, posEnemy;
@@ -47,9 +49,10 @@ private:
 	TileMap* map;
 	bool muerto;
 	int DelayMuerte;
-
 	int enemy_type;
 	bool fin;
+	int delay_shot;
 };
 
 #endif // _ENEMY_INCLUDE
+

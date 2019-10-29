@@ -64,19 +64,21 @@ void Enemy::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int
 		sprite->addKeyframe(0, glm::vec2(0.f, 0.f));
 
 		sprite->setAnimationSpeed(1, 8);
-		sprite->addKeyframe(0, glm::vec2(0.25f, 0.f));
+		sprite->addKeyframe(1, glm::vec2(0.25f, 0.f));
 
 		sprite->setAnimationSpeed(2, 8);
-		sprite->addKeyframe(1, glm::vec2(0.5f, 0.f));
+		sprite->addKeyframe(2, glm::vec2(0.5f, 0.f));
 
 		sprite->setAnimationSpeed(3, 8);
-		sprite->addKeyframe(1, glm::vec2(0.75f, 0.f));
+		sprite->addKeyframe(3, glm::vec2(0.75f, 0.f));
 
 		sprite->changeAnimation(0);
 		tileMapDispl = tileMapPos;
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+		delay_shot = 0;
 	}
-	
+
+
 	spritesheetMuerto.loadFromFile("images/muerteEnemigo.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	// crear Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
 	spriteMuerto = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.5, 0.5), &spritesheetMuerto, &shaderProgram);
@@ -178,7 +180,10 @@ void Enemy::update(int deltaTime, bool act)
 				{
 					posEnemy.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
 					if (jumpAngle > 90)
-						bJumping = !map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y);
+
+						bJumping = !map->collisionMoveDown2(posEnemy, glm::ivec2(16, 32), &posEnemy.y);
+
+
 				}
 			}
 			else
@@ -201,6 +206,7 @@ void Enemy::update(int deltaTime, bool act)
 		sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
 	}
 }
+
 void Enemy::render()
 {
 	if (muerto == true)
@@ -263,7 +269,6 @@ int Enemy::getType() {
 	return enemy_type;
 }
 
-
 bool Enemy::final()
 {
 	return fin;
@@ -296,4 +301,15 @@ bool Enemy::collision(int x, int y, const glm::ivec2& size) {
 
 bool Enemy::getMuerto() {
 	return muerto;
+
+}
+
+bool Enemy::time_shot() {
+	delay_shot++;
+	if (delay_shot == 4) {
+		delay_shot = 0;
+		return true;
+	}
+	return false;
+
 }

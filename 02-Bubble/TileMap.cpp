@@ -419,6 +419,7 @@ bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) c
 	return false;
 }
 
+
 bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
 {
 	int x, y0, y1;

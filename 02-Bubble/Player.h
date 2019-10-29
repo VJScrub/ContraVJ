@@ -56,6 +56,7 @@ private:
 	
 	bool ignoreDownColision;
 
+
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;
 	bool delayDown;
