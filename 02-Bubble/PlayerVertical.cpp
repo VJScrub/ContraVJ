@@ -292,3 +292,19 @@ float PlayerVertical::getposIniY()
 {
 	return posIniY;
 }
+
+bool PlayerVertical::die()
+{
+	lives -= 1;
+	return lives == 0;
+}
+
+void PlayerVertical::setvidas(int _lives)
+{
+	lives = _lives;
+}
+
+int PlayerVertical::getvidas()
+{
+	return lives;
+}

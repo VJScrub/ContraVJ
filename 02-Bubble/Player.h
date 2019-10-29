@@ -17,6 +17,8 @@ public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
 	void update(int deltaTime);
 	void render();
+
+	void recover();
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
@@ -33,9 +35,13 @@ public:
 
 	int getDireccion();
 
+	bool die();
+
 	void SetSpreadGunTrue();
 
 	bool getSpreadGun();
+
+	int getvidas();
 
 	
 private:
@@ -46,7 +52,8 @@ private:
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
-	int direccion;
+	int direccion, lives;
+	
 	bool ignoreDownColision;
 
 	int AnimacionActual;

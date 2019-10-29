@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
-
+#include "vida.h"
 #include "Shot.h"
 #include <GL/glut.h>
 #include "PantallaInicialJP.h"
@@ -73,6 +73,7 @@ void Scene::update(int deltaTime)
 	float vx = player->getVX();
 	float vy = player->getVY();
 	bool auxb = true;
+	int auxvidas;
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
@@ -109,7 +110,9 @@ void Scene::update(int deltaTime)
 		sp->update(deltaTime);
 
 		if (player->getPositionX() > 3356) {
+			auxvidas = player->getvidas();
 			iniciar();
+			playerVert->setvidas(auxvidas);
 			Estado = Level2;
 			break;
 		}
@@ -148,18 +151,45 @@ void Scene::update(int deltaTime)
 
 		}
 
+
+		player_status(x, y);
 		for (int i = 0; i < enemies.size(); i++) {
 			current_x = enemies[i]->getPositionX();
 			current_y = enemies[i]->getPositionY();
 			if ((current_x > cameraX - (SCREEN_WIDTH + (INIT_PLAYER_X_TILES + 1) * map->getTileSize()) && current_x < cameraX) && (current_y < cameraY && current_y > -16))
 			{
-				enemies[i]->update(deltaTime);
+				act = false;
+				player_x = player->getPositionX();
+				player_y = player->getPositionY();
+				if (current_x - player_x < 5 * map->getTileSize() && current_x - player_x > 0)
+					act = true;
+				enemies[i]->update(deltaTime, act);
+				delay_enemy_shoot++;
+				if (delay_enemy_shoot == 1) {
+					int direccion;
+					float posX, posY;
+					direccion = enemies[i]->getDireccion();
+
+					posX = enemies[i]->getPositionX();
+					posY = enemies[i]->getPositionY();
+					makeShotEnemy(false, false, posX, posY, direccion);
+
+
+
+				}
+
+
+
+				if (enemies[i]->getType() == 2) {
+
+				}
 				if (enemies[i]->final()) {
 					enemies.erase(enemies.begin() + i);
 					i -= 1;
 				}
 			}
 		}
+
 
 		
 		if (vx > 0) {
@@ -203,7 +233,10 @@ void Scene::update(int deltaTime)
 		//}
 		projection = glm::ortho(cameraX - SCREEN_WIDTH, cameraX, cameraY, 0.f);
 
-
+		for (int i = 0; i < vidas.size(); i++) {
+			if (vidas[i]->getMostrar())
+				vidas[i]->render();
+		}
 		break;
 
 
@@ -281,6 +314,7 @@ void Scene::update(int deltaTime)
 							changeSound(Estado);
 						}
 						else
+							engine->play2D("sounds/danoBoss.wav");
 							finalboss->setVidas(finalboss->getVidas() - 1);
 					}
 				}
@@ -289,6 +323,7 @@ void Scene::update(int deltaTime)
 				for (int j = 0; j < enemiesKey.size(); j++) {
 					if (enemiesKey[j]->hurted(shots[i]->getPositionX(), shots[i]->getPositionY())) {
 						if (enemiesKey[j]->getVidas() == 0) {
+							engine->play2D("sounds/muerteEnemy.wav");
 							enemiesKey[j]->muerteEnemyPersona();
 
 							siguienteNivel = true;
@@ -304,6 +339,7 @@ void Scene::update(int deltaTime)
 							shots[i]->Setdist(0);
 							enemies3[j]->setVidas(enemies3[j]->getVidas() - 1);
 							if (enemies3[j]->getVidas() == 0) {
+								engine->play2D("sounds/muerteEnemy.wav");
 								enemies3[j]->muerteEnemyPersona();
 
 							}
@@ -401,7 +437,10 @@ void Scene::update(int deltaTime)
 			playerVert->update(deltaTime);
 		}
 		
-
+		for (int i = 0; i < vidas.size(); i++) {
+			if (vidas[i]->getMostrar())
+				vidas[i]->render();
+		}
 		break;
 
 	case Creditos:
@@ -589,6 +628,132 @@ void Scene::makeShot(bool playershot, bool vertical)
 
 }
 
+
+
+void Scene::makeShotEnemy(bool playershot, bool vertical, float posX, float posY, int direccion)
+{
+	newShot();
+	shots[shots.size() - 1] = new Shot();
+
+	if (vertical) {
+		switch (direccion)
+		{
+		case RIGHT:
+			posX += 55;
+			posY += 5;
+			break;
+
+		case LEFT:
+			posX += 55;
+			break;
+		case DOWN_RIGHT:
+			direccion = RIGHT;
+			posX += 55;
+			posY += 20;
+			break;
+		case DOWN_LEFT:
+			direccion = LEFT;
+			posX += 55;
+			posY += 20;
+			break;
+		case RIGHT_UP:
+			posY += 0;
+			break;
+		case LEFT_UP:
+			posX += 55;
+			break;
+		case UP:
+			posY += 55;
+			break;
+		default:
+			break;
+		}
+	}
+	else {
+		switch (direccion)
+		{
+		case RIGHT:
+			posX += 30;
+			posY += 5;
+			break;
+
+		case LEFT:
+			posX -= 10;
+			posY += 5;
+			break;
+		case DOWN_RIGHT:
+			direccion = RIGHT;
+			posX += 30;
+			posY += 15;
+			break;
+		case RIGHT_UP:
+			posX += 20;
+			posY += 0;
+			break;
+		case LEFT_UP:
+			posX -= 5;
+			posY += 0;
+			break;
+		case UP:
+			posY -= 10;
+			break;
+		default:
+			break;
+		}
+	}
+	shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion);
+	shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
+	if (vertical) {
+		shots[shots.size() - 1]->setTileMap(mapLevel2);
+		shots[shots.size() - 1]->VerticalShot();
+	}
+	else
+		shots[shots.size() - 1]->setTileMap(map);
+
+	if (siguienteNivel)
+		shots[shots.size() - 1]->Setdist(300);
+
+	if (playershot)
+	{
+		shots[shots.size() - 1]->PlayerShot();
+	}
+	if (playershot && player->getSpreadGun()) {
+		int direccion2;
+
+		switch (direccion)
+		{
+		case RIGHT:
+			direccion2 = RIGHT_UP;
+			break;
+		case LEFT:
+			direccion2 = LEFT_UP;
+			break;
+		case DOWN_RIGHT:
+			direccion2 = RIGHT_UP;
+			break;
+		case RIGHT_UP:
+			direccion2 = UP;
+			break;
+		case LEFT_UP:
+			direccion2 = UP;
+			break;
+		case UP:
+			direccion2 = RIGHT_UP;
+			break;
+		default:
+			break;
+		}
+		newShot();
+		shots[shots.size() - 1] = new Shot();
+		shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion2);
+		shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
+		shots[shots.size() - 1]->setTileMap(map);
+		shots[shots.size() - 1]->PlayerShot();
+	}
+
+}
+
+
 void Scene::render()
 {
 	glm::mat4 modelview;
@@ -617,6 +782,10 @@ void Scene::render()
 		for (int i = 0; i < shots.size(); i++) {
 			shots[i]->render();
 		}
+		for (int i = 0; i < vidas.size(); i++) {
+			if (vidas[i]->getMostrar())
+				vidas[i]->render();
+		}
 		break;
 
 	case Level2:
@@ -634,6 +803,10 @@ void Scene::render()
 		for (int i = 0; i < enemiesKey.size(); i++) {
 			enemiesKey[i]->render();
 		}
+		for (int i = 0; i < vidas.size(); i++) {
+			if (vidas[i]->getMostrar())
+				vidas[i]->render();
+		}
 		break;
 	case Creditos:
 		mapCreditos->render();
@@ -645,7 +818,24 @@ void Scene::render()
 		mapContinue->render();
 		break;
 	}
+	for (int i = 0; i < vidas.size(); i++) {
+		if (vidas[i]->getMostrar())
+		vidas[i]->render();
+	}
 		
+}
+
+void Scene::player_status(int playerx, int playery) {
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies[i]->collision(playerx, playery, glm::ivec2(16, 32)))
+		{
+			if (!enemies[i]->getMuerto() && player->die()) {
+				Estado = Creditos;
+			}
+			enemies[i]->muerteEnemyPersona();
+		}
+
+	}
 }
 
 void Scene::iniNumberShots(int zero)
@@ -719,17 +909,24 @@ void Scene::initEnemies(const string& enemiesFile)
 			if (tile == '$') {
 				newEnemy();
 				enemies[enemies.size() - 1] = new Enemy();
-				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
+				enemies[enemies.size() - 1]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+				enemies[enemies.size() - 1]->setTileMap(map);
+			}
+			if (tile == '#') {
+				newEnemy();
+				enemies[enemies.size() - 1] = new Enemy();
+				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 2);
 				enemies[enemies.size() - 1]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
 				enemies[enemies.size() - 1]->setTileMap(map);
 			}
 		}
 		fin.get(tile);
 #ifndef _WIN32
-			fin.get(tile);
+		fin.get(tile);
 #endif
-		}
-		fin.close();
+	}
+	fin.close();
 }
 
 
@@ -739,6 +936,13 @@ void Scene::newEnemy()
 {
 	enemies.resize(enemies.size() + 1);
 }
+
+
+void Scene::newVida()
+{
+	vidas.resize(vidas.size() + 1);
+}
+
 
 void Scene::newEnemyKey()
 {
@@ -805,7 +1009,7 @@ void Scene::iniciar() {
 	sp->setTileMap(map);
 	sp->setPosition(glm::vec2(40 * map->getTileSize() / 2, 23 * map->getTileSize() / 2));
 
-
+	
 	//Level2
 	mapLevel2 = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	playerVert = new PlayerVertical();
@@ -841,6 +1045,18 @@ void Scene::iniciar() {
 	shotBossDelay = 100;
 	delay = 0;
 	delay2 = 0;
+
+	for (int i = 0; i < player->getvidas(); i++) {
+		newVida();
+		vidas[vidas.size() - 1] = new vida();
+		vidas[vidas.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+		vidas[vidas.size() - 1]->setPosition(glm::vec2((1* mapLevel2->getTileSize())*i, 2 * mapLevel2->getTileSize()));
+		vidas[vidas.size() - 1]->setTileMap(mapLevel2);
+	}
+
+
+
+
 }
 
 void Scene::iniciarEnemies3()

@@ -29,6 +29,11 @@ public:
 
 	float getposIniY();
 
+	bool die();
+
+	void setvidas(int _lives);
+
+	int getvidas();
 
 private:
 	bool bJumping;
@@ -37,7 +42,7 @@ private:
 	Texture spritesheet;
 	Sprite* sprite;
 	TileMap* map;
-	int direccion,profundidad, altura;
+	int direccion,profundidad, altura, lives;
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;

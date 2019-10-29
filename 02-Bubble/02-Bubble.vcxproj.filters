@@ -20,6 +20,7 @@
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="SpreadGun.cpp" />
     <ClCompile Include="EnemyStage3.cpp" />
+    <ClCompile Include="vida.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
@@ -42,6 +43,7 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="SpreadGun.h" />
     <ClInclude Include="EnemyStage3.h" />
+    <ClInclude Include="vida.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="02-Bubble1.rc" />

@@ -16,6 +16,7 @@
 #include "Boss.h"
 #include "SpreadGun.h"
 #include "EnemyStage3.h"
+#include "vida.h"
 #include <stdio.h>
 #include <irrKlang.h>
 #pragma comment(lib, "irrKlang.lib")
@@ -35,7 +36,10 @@ public:
 	void init();
 	void update(int deltaTime);
 	void makeShot(bool playershot, bool vertical);
+	void makeShotEnemy(bool playershot, bool vertical, float posX, float posY, int direccion);
 	void render();
+
+	void player_status(int playerx, int playery);
 
 	void iniNumberShots(int zero);
 private:
@@ -45,6 +49,8 @@ private:
 	void initEnemies(const string& enemiesFile);
 
 	void newEnemy();
+
+	void newVida();
 
 	void newEnemyKey();
 
@@ -60,7 +66,8 @@ private:
 private:
 	TileMap* mapPantallaInicial;
 	PantallaInicialJP *pijp;
-	
+	vector<vida*> vidas;
+
 	TileMap* mapCreditos;
 	TileMap* mapIns;
 	TileMap* mapContinue;
@@ -69,7 +76,10 @@ private:
 	Player *player;
 	vector<Enemy*> enemies;
 	Enemy *currentEnemy;
-	int current_x, current_y;
+	int current_x, current_y, player_x, player_y;;
+	int colision_x, colision_y, player_lives;
+	int delay_enemy_shoot;
+	bool act;
 	SpreadGun *sp;
 
 	TileMap* mapLevel2;
