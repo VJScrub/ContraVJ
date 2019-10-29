@@ -87,7 +87,6 @@ void Player::update(int deltaTime)
 {
 	AnimacionActual = sprite->animation();
 	sprite->update(deltaTime);
-	ignoreDownColision = false;
 	if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) && Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
 		if (sprite->animation() != MOVE_RIGHT_UP && !bJumping)
