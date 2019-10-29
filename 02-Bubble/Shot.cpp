@@ -33,7 +33,9 @@ void Shot::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, int 
 
 	spriteBoss->setAnimationSpeed(0, 8);
 	spriteBoss->addKeyframe(0, glm::vec2(0.f, 0.f));
-
+	spriteBoss->addKeyframe(0, glm::vec2(0.f, 1.f));
+	spriteBoss->addKeyframe(0, glm::vec2(1.f, 0.f));
+	spriteBoss->addKeyframe(0, glm::vec2(1.f, 1.f));
 	
 	spriteBoss->changeAnimation(0);
 	tileMapDispl = tileMapPos;
@@ -62,29 +64,34 @@ void Shot::update(int deltaTime, bool vertical)
 	dist -= 1;
 	if (!shotBoss) {
 		if (vertical) {
-			switch (direccion)
-			{
-			case RIGHT:
-				posIni.y -= 0.25f;
-				break;
-			case LEFT:
-				posIni.y -= 0.25f;
-				break;
-			case RIGHT_UP:
-				posIni.y -= 0.25f;
-				break;
-			case LEFT_UP:
-				posIni.y -= 0.25f;
-				break;
-			case UP:
-				posIni.y -= 0.25f;
-				break;
-			case DOWN:
-				posIni.y -= 0.25f;
-				altura = 0;
-				break;
-			default:
-				break;
+			if (shotPlayer == false) {
+				posIni.y += 1;
+			}
+			else {
+				switch (direccion)
+				{
+				case RIGHT:
+					posIni.y -= 0.25f;
+					break;
+				case LEFT:
+					posIni.y -= 0.25f;
+					break;
+				case RIGHT_UP:
+					posIni.y -= 0.25f;
+					break;
+				case LEFT_UP:
+					posIni.y -= 0.25f;
+					break;
+				case UP:
+					posIni.y -= 0.25f;
+					break;
+				case DOWN:
+					posIni.y -= 0.25f;
+					altura = 0;
+					break;
+				default:
+					break;
+				}
 			}
 		}
 		else {
@@ -207,4 +214,9 @@ bool Shot::hurted(float x, float y)
 	}
 	else
 		return false;
+}
+
+bool Shot::getPlayerShot()
+{
+	return shotPlayer;
 }

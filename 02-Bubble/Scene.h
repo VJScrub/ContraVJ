@@ -14,6 +14,8 @@
 #include "PantallaLeve2Boss.h"
 #include "EnemyStage2Key.h"
 #include "Boss.h"
+#include "SpreadGun.h"
+#include "EnemyStage3.h"
 #include <stdio.h>
 #include <irrKlang.h>
 #pragma comment(lib, "irrKlang.lib")
@@ -32,7 +34,8 @@ public:
 
 	void init();
 	void update(int deltaTime);
-	void makeShot(bool playershot, bool vertical, float posX, float posY, int direccion);
+	void makeShot(bool playershot, bool vertical);
+	void makeShot2(bool playershot, bool vertical, float posX, float posY, int direccion);
 	void render();
 
 	void player_status(int playerx, int playery);
@@ -48,7 +51,13 @@ private:
 
 	void newEnemyKey();
 
+	void newEnemy3();
+
 	void changeSound(int _estado);
+
+	void iniciar();
+
+	void iniciarEnemies3();
 
 
 private:
@@ -56,7 +65,9 @@ private:
 	PantallaInicialJP *pijp;
 	
 	TileMap* mapCreditos;
-	
+	TileMap* mapIns;
+	TileMap* mapContinue;
+
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
@@ -66,12 +77,16 @@ private:
 	int delay_enemy_shoot;
 	bool act;
 
+	SpreadGun *sp;
+
 	TileMap* mapLevel2;
 	PlayerVertical *playerVert;
 	PantallaLevel2Stage1 *Stage1;
 	PantallaLeve2Boss *StageBoss;
 	bool siguienteNivel;
 	vector<EnemyStage2Key*> enemiesKey;
+	vector<EnemyStage3*> enemies3;
+
 	Boss *finalboss;
 
 	irrklang::ISoundEngine* engine;
@@ -85,6 +100,10 @@ private:
 	bool creditosDelay;
 	int Estado;
 	int shotBossDelay;
+	bool InsDelay;
+	bool PIDelay;
+	int delay;
+	int delay2;
 };
 
 

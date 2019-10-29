@@ -23,6 +23,7 @@ enum Dir
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	delayDown = false;
 	bJumping = false;
 	bdunking = false;
 	lives = 4;
@@ -81,6 +82,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	jugadorVx = jugadorVy = 0;
 	direccion = RIGHT;
+	spreadGun = false;
 }
 
 void Player::update(int deltaTime)
@@ -94,7 +96,7 @@ void Player::update(int deltaTime)
 		posPlayer.x += 2;
 		jugadorVx = 2;
 		direccion = RIGHT_UP;
-		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveLeft2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
 			jugadorVx = 0;
@@ -109,7 +111,7 @@ void Player::update(int deltaTime)
 		posPlayer.x -= 2;
 		jugadorVx = -2;
 		direccion = LEFT_UP;
-		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveLeft2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x += 2;
 			jugadorVx = 0;
@@ -124,7 +126,7 @@ void Player::update(int deltaTime)
 		posPlayer.x -= 2;
 		jugadorVx = -2;
 		direccion = LEFT;
-		if(map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+		if(map->collisionMoveLeft2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x += 2;
 			jugadorVx = 0;
@@ -138,7 +140,7 @@ void Player::update(int deltaTime)
 		posPlayer.x += 2;
 		jugadorVx = 2;
 		direccion = RIGHT;
-		if(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+		if(map->collisionMoveRight2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
 			jugadorVx = 0;
@@ -147,9 +149,7 @@ void Player::update(int deltaTime)
 	}
 
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN) && Game::instance().getKey(32)) {
-
-		posPlayer.y += FALL_STEP;
-
+			posPlayer.y += FALL_STEP;
 	}
 
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
@@ -162,7 +162,7 @@ void Player::update(int deltaTime)
 			direccion = DOWN;
 		else
 			direccion = DOWN_RIGHT;
-		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveRight2(posPlayer, glm::ivec2(32, 32)))
 		{
 			sprite->changeAnimation(STAND_RIGHT);
 			direccion = RIGHT;
@@ -216,12 +216,12 @@ void Player::update(int deltaTime)
 			jugadorVx = -2;
 		}
 
-		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
+		if (map->collisionMoveRight2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x -= 2;
 			jugadorVx = 0;
 		}
-		else if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
+		else if (map->collisionMoveLeft2(posPlayer, glm::ivec2(32, 32)))
 		{
 			posPlayer.x += 2;
 			jugadorVx = 0;
@@ -244,14 +244,14 @@ void Player::update(int deltaTime)
 		{
 			posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
 			if(jumpAngle > 90)
-				bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+				bJumping = !map->collisionMoveDown2(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 		}
 	}
 	else
 	{
 		posPlayer.y += FALL_STEP;
-		
-		if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
+
+		if(map->collisionMoveDown2(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 		{
 			if (Game::instance().getKey(32))
 			{
@@ -320,4 +320,12 @@ int Player::getDireccion()
 bool Player::die() {
 	lives -= 1;
 	return lives == 0;
+}
+
+void Player::SetSpreadGunTrue() {
+	spreadGun = true;
+}
+
+bool Player::getSpreadGun(){
+	return spreadGun;
 }
