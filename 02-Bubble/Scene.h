@@ -14,6 +14,7 @@
 #include "PantallaLeve2Boss.h"
 #include "EnemyStage2Key.h"
 #include "Boss.h"
+#include "SpreadGun.h"
 #include <stdio.h>
 #include <irrKlang.h>
 #pragma comment(lib, "irrKlang.lib")
@@ -50,13 +51,16 @@ private:
 
 	void changeSound(int _estado);
 
+	void iniciar();
+
 
 private:
 	TileMap* mapPantallaInicial;
 	PantallaInicialJP *pijp;
 	
 	TileMap* mapCreditos;
-	
+	TileMap* mapIns;
+
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
@@ -65,6 +69,8 @@ private:
 	int colision_x, colision_y, player_lives;
 	int delay_enemy_shoot;
 	bool act;
+
+	SpreadGun *sp;
 
 	TileMap* mapLevel2;
 	PlayerVertical *playerVert;
@@ -85,6 +91,8 @@ private:
 	bool creditosDelay;
 	int Estado;
 	int shotBossDelay;
+	bool InsDelay;
+	bool PIDelay;
 };
 
 

@@ -26,6 +26,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Shot.h" />
+    <ClInclude Include="SpreadGun.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TileMap.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Shot.cpp" />
+    <ClCompile Include="SpreadGun.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TileMap.cpp" />
@@ -95,11 +97,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories>C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SOIL.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

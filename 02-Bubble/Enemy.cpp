@@ -126,10 +126,12 @@ void Enemy::update(int deltaTime, bool act)
 	}
 	else
 	{
+
 		if (enemy_type == 1) {
 			if (sprite->animation() == MOVE_LEFT) {
 				posEnemy.x -= 2;
-				if (map->collisionMoveLeft(posEnemy, glm::ivec2(16, 32)) || (act && !bJumping))
+				if (map->collisionMoveLeft2(posEnemy, glm::ivec2(16, 32)) || (act && !bJumping))
+
 				{
 					posEnemy.x += 2;
 					if (!bJumping)
@@ -140,27 +142,29 @@ void Enemy::update(int deltaTime, bool act)
 					}
 				}
 				posEnemy.y += FALL_STEP;
-				if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y) && !bJumping)
+				if (!map->collisionMoveDown2(posEnemy, glm::ivec2(16, 32), &posEnemy.y) && !bJumping)
 				{
 					posEnemy.x += 4;
 					sprite->changeAnimation(MOVE_RIGHT);
 				}
 				posEnemy.y -= FALL_STEP;
 			}
+
 			if (sprite->animation() == MOVE_RIGHT)
 			{
 				posEnemy.x += 2;
-				if (map->collisionMoveRight(posEnemy, glm::ivec2(16, 32)))
+				if (map->collisionMoveRight2(posEnemy, glm::ivec2(16, 32)))
 				{
 					posEnemy.x -= 2;
 					sprite->changeAnimation(MOVE_LEFT);
 				}
 				posEnemy.y += FALL_STEP;
-				if (!map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) {
+				if (!map->collisionMoveDown2(posEnemy, glm::ivec2(16, 32), &posEnemy.y)) {
 					posEnemy.x -= 2;
 					sprite->changeAnimation(MOVE_LEFT);
 				}
 				posEnemy.y -= FALL_STEP;
+
 			}
 
 			if (bJumping)
@@ -181,7 +185,7 @@ void Enemy::update(int deltaTime, bool act)
 			else
 			{
 				posEnemy.y += FALL_STEP;
-				if (map->collisionMoveDown(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
+				if (map->collisionMoveDown2(posEnemy, glm::ivec2(16, 32), &posEnemy.y))
 				{
 					if (sprite->animation() == STAND_LEFT)
 						sprite->changeAnimation(MOVE_LEFT);
