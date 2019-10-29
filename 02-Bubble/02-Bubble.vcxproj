@@ -95,12 +95,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SOIL.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
