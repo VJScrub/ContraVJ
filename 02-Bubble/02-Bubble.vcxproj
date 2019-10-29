@@ -15,6 +15,7 @@
     <ClInclude Include="Boss.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyStage2Key.h" />
+    <ClInclude Include="EnemyStage3.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="PantallaInicialJP.h" />
     <ClInclude Include="PantallaLeve2Boss.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyStage2Key.cpp" />
+    <ClCompile Include="EnemyStage3.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PantallaInicialJP.cpp" />

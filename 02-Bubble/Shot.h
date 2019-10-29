@@ -38,6 +38,8 @@ public:
 
 	bool hurted(float x, float y);
 
+	bool getPlayerShot();
+
 private:
 	glm::ivec2 tileMapDispl, posIni;
 	int dist, direccion;

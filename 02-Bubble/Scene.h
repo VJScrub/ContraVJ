@@ -15,6 +15,7 @@
 #include "EnemyStage2Key.h"
 #include "Boss.h"
 #include "SpreadGun.h"
+#include "EnemyStage3.h"
 #include <stdio.h>
 #include <irrKlang.h>
 #pragma comment(lib, "irrKlang.lib")
@@ -47,9 +48,13 @@ private:
 
 	void newEnemyKey();
 
+	void newEnemy3();
+
 	void changeSound(int _estado);
 
 	void iniciar();
+
+	void iniciarEnemies3();
 
 
 private:
@@ -58,6 +63,7 @@ private:
 	
 	TileMap* mapCreditos;
 	TileMap* mapIns;
+	TileMap* mapContinue;
 
 	TileMap *map;
 	Player *player;
@@ -72,6 +78,8 @@ private:
 	PantallaLeve2Boss *StageBoss;
 	bool siguienteNivel;
 	vector<EnemyStage2Key*> enemiesKey;
+	vector<EnemyStage3*> enemies3;
+
 	Boss *finalboss;
 
 	irrklang::ISoundEngine* engine;
@@ -87,6 +95,8 @@ private:
 	int shotBossDelay;
 	bool InsDelay;
 	bool PIDelay;
+	int delay;
+	int delay2;
 };
 
 
