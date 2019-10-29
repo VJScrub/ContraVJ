@@ -23,6 +23,7 @@ enum Dir
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
+	delayDown = false;
 	bJumping = false;
 	bdunking = false;
 	spritesheet.loadFromFile("images/bub3.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -80,6 +81,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 	jugadorVx = jugadorVy = 0;
 	direccion = RIGHT;
+	spreadGun = false;
 }
 
 void Player::update(int deltaTime)
@@ -147,9 +149,7 @@ void Player::update(int deltaTime)
 	}
 
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN) && Game::instance().getKey(32)) {
-
-		posPlayer.y += FALL_STEP;
-
+			posPlayer.y += FALL_STEP;
 	}
 
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
@@ -311,4 +311,12 @@ int Player::getAnimation()
 int Player::getDireccion()
 {
 	return direccion;
+}
+
+void Player::SetSpreadGunTrue() {
+	spreadGun = true;
+}
+
+bool Player::getSpreadGun(){
+	return spreadGun;
 }

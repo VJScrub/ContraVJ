@@ -33,6 +33,10 @@ public:
 
 	int getDireccion();
 
+	void SetSpreadGunTrue();
+
+	bool getSpreadGun();
+
 	
 private:
 	bool bJumping;
@@ -47,6 +51,8 @@ private:
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;
+	bool delayDown;
+	bool spreadGun;
 };
 
 

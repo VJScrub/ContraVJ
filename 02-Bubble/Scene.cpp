@@ -10,12 +10,13 @@
 #include <GL/glut.h>
 #include "PantallaInicialJP.h"
 #include "PantallaLevel2Stage1.h"
+#include "SpreadGun.h"
 
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
 #define INIT_PLAYER_X_TILES 20
-#define INIT_PLAYER_Y_TILES 21
+#define INIT_PLAYER_Y_TILES 4
 
 enum CicloVida
 {
@@ -101,9 +102,17 @@ void Scene::update(int deltaTime)
 
 		break;
 	case Level1:
+		
 
 		currentTime += deltaTime;
 		player->update(deltaTime);
+		sp->update(deltaTime);
+
+		if (sp->hurted(player->getPositionX(), player->getPositionY())) {
+			sp->setfinal();
+			player->SetSpreadGunTrue();
+		}
+
 
 		for (int k = 0; k < 6; k++) {
 			for (int i = 0; i < shots.size(); i++) {
@@ -473,6 +482,40 @@ void Scene::makeShot(bool playershot, bool vertical)
 	{
 		shots[shots.size() - 1]->PlayerShot();
 	}
+	if (playershot && player->getSpreadGun()) {
+		int direccion2;
+		
+		switch (direccion)
+		{
+		case RIGHT:
+			direccion2 = RIGHT_UP;
+			break;
+		case LEFT:
+			direccion2 = LEFT_UP;
+			break;
+		case DOWN_RIGHT:
+			direccion2 = RIGHT_UP;
+			break;
+		case RIGHT_UP:
+			direccion2 = UP;
+			break;
+		case LEFT_UP:
+			direccion2 = UP;
+			break;
+		case UP:
+			direccion2 = RIGHT_UP;
+			break;
+		default:
+			break;
+		}
+		newShot();
+		shots[shots.size() - 1] = new Shot();
+		shots[shots.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, direccion2);
+		shots[shots.size() - 1]->setPosition(glm::vec2(posX, posY));
+		shots[shots.size() - 1]->setTileMap(map);
+		shots[shots.size() - 1]->PlayerShot();
+	}
+
 }
 
 void Scene::render()
@@ -495,6 +538,7 @@ void Scene::render()
 		break;
 	case Level1:
 		map->render();
+		sp->render();
 		player->render();
 		for (int i = 0; i < enemies.size(); i++) {
 			enemies[i]->render();
@@ -667,18 +711,23 @@ void Scene::iniciar() {
 	mapIns = TileMap::createTileMap("levels/Instrucciones.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 
 	//Level1  
-	map = TileMap::createTileMap("levels/level01P.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	initEnemies("levels/level01enemies.txt");
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize() / 2, INIT_PLAYER_Y_TILES * map->getTileSize() / 2));
 	player->setTileMap(map);
+	sp = new SpreadGun();
+	sp->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+	sp->setTileMap(map);
+	sp->setPosition(glm::vec2(40 * map->getTileSize() / 2, 23 * map->getTileSize() / 2));
+
 
 	//Level2
 	mapLevel2 = TileMap::createTileMap("levels/level02.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	playerVert = new PlayerVertical();
 	playerVert->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	playerVert->setPosition(glm::vec2(INIT_PLAYER_X_TILES * mapLevel2->getTileSize() / 2, INIT_PLAYER_Y_TILES * mapLevel2->getTileSize() / 2));
+	playerVert->setPosition(glm::vec2(20 * mapLevel2->getTileSize() / 2, 24 * mapLevel2->getTileSize() / 2));
 	playerVert->setTileMap(mapLevel2);
 	Stage1 = new PantallaLevel2Stage1();
 	Stage1->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);

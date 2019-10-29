@@ -41,9 +41,12 @@ public:
 private:
 	bool loadLevel(const string &levelFile);
 	bool loadLevel2(const string& levelFile);
+	bool loadLevel3(const string& levelFile);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
 
 	void prepareArrays2(const glm::vec2& minCoords, ShaderProgram& program);
+
+	void prepareArrays3(const glm::vec2& minCoords, ShaderProgram& program);
 
 private:
 	GLuint vao;

@@ -14,6 +14,7 @@
 #include "PantallaLeve2Boss.h"
 #include "EnemyStage2Key.h"
 #include "Boss.h"
+#include "SpreadGun.h"
 #include <stdio.h>
 #include <irrKlang.h>
 #pragma comment(lib, "irrKlang.lib")
@@ -63,6 +64,7 @@ private:
 	vector<Enemy*> enemies;
 	Enemy *currentEnemy;
 	int current_x, current_y;
+	SpreadGun *sp;
 
 	TileMap* mapLevel2;
 	PlayerVertical *playerVert;
