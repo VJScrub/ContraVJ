@@ -61,6 +61,8 @@ private:
 	TileMap *map;
 	Player *player;
 	vector<Enemy*> enemies;
+	Enemy *currentEnemy;
+	int current_x, current_y;
 
 	TileMap* mapLevel2;
 	PlayerVertical *playerVert;

@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+
 #include "Shot.h"
 #include <GL/glut.h>
 #include "PantallaInicialJP.h"
@@ -34,7 +35,6 @@ enum Dir
 #define INIT_ENEMY_Y_TILES 21
 
 
-
 Scene::Scene()
 {
 	map = NULL;
@@ -58,11 +58,10 @@ void Scene::init()
 	
 	changeSound(Estado);
 
-	
-
 	initShaders();
 	iniciar();
 
+	shotBossDelay = 100;
 
 }
 
@@ -135,12 +134,18 @@ void Scene::update(int deltaTime)
 		}
 
 		for (int i = 0; i < enemies.size(); i++) {
-			enemies[i]->update(deltaTime);
-			if (enemies[i]->final()) {
-				enemies.erase(enemies.begin() + i);
-				i -= 1;
+			current_x = enemies[i]->getPositionX();
+			current_y = enemies[i]->getPositionY();
+			if ((current_x > cameraX - (SCREEN_WIDTH + (INIT_PLAYER_X_TILES + 1) * map->getTileSize()) && current_x < cameraX) && (current_y < cameraY && current_y > -16))
+			{
+				enemies[i]->update(deltaTime);
+				if (enemies[i]->final()) {
+					enemies.erase(enemies.begin() + i);
+					i -= 1;
+				}
 			}
 		}
+
 		
 		if (vx > 0) {
 			if((cameraX < ((map->returnMapSize().x + 1) * map->getTileSize())) && (player->getPositionX() > ((cameraX-45) - SCREEN_WIDTH/ 2)))
@@ -289,6 +294,34 @@ void Scene::update(int deltaTime)
 		{
 			shotDelay = false;
 		}
+
+		if (Game::instance().getKey('c')) {
+			siguienteNivel = true;
+			Stage1->SiguienteNivel();
+		}
+
+	if (vx > 0) {
+		cameraX += 2;
+	}
+	else if (vx < 0) {
+		cameraX -= 2;
+	}
+	//x += deltaTime * vx;
+	//y += deltaTime * vy;
+	//x -= cameraX;
+	//y -= cameraX;
+	//if (x < (SCREEN_X / 3))
+	//	cameraX = x + cameraX - SCREEN_X / 3;
+	//if (x > (2 * SCREEN_X / 3)) {
+	//	cameraX = x + cameraX;
+	//	cameraX -= 2 * SCREEN_X / 3;
+	//}
+	//if (y < (SCREEN_Y / 3))
+	//	cameraY = y + cameraY - SCREEN_Y / 3;
+	//if (y > (2 * SCREEN_Y / 3)) {
+	//	cameraY = y + cameraY;
+	//	cameraY -= 2 * SCREEN_Y / 3;
+	//}
 
 
 		Stage1->update(deltaTime);
@@ -452,6 +485,8 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+
+	
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
@@ -589,6 +624,7 @@ void Scene::newEnemyKey()
 	enemiesKey.resize(enemiesKey.size() + 1);
 }
 
+
 void Scene::changeSound(int _estado) {
 
 	switch (Estado)
@@ -613,6 +649,7 @@ void Scene::changeSound(int _estado) {
 		break;
 	}
 }
+
 
 void Scene::iniciar() {
 
@@ -671,3 +708,4 @@ void Scene::iniciar() {
 	shotBossDelay = 100;
 
 }
+

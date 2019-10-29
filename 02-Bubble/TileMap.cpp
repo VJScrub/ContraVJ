@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "TileMap.h"
+#include "string"
 
 
 using namespace std;
@@ -85,21 +86,41 @@ bool TileMap::loadLevel(const string &levelFile)
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 	
 	map = new int[mapSize.x * mapSize.y];
+	int i, j;
+	i = j = 0;
+	int tmp = 0;
+	while (fin.get(tile) && j < mapSize.y ) {
+		if (tile == '\n') {
+			++j;
+			i = 0;
+		}
+		else if (tile == ',') {
+			map[j * mapSize.x + i] =tmp;
+			i +=1;
+			tmp = 0;
+		}
+		else {
+			tmp = tmp * 10 + (tile-'0');
+		}
+	}
+	/*
 	for(int j=0; j<mapSize.y; j++)
 	{
 		for(int i=0; i<mapSize.x; i++)
 		{
 			fin.get(tile);
-			if(tile == ' ')
-				map[j*mapSize.x+i] = 0;
+			while(tile )
+			if (tile == ' ')
+				map[j * mapSize.x + i] = 0;
 			else
-				map[j*mapSize.x+i] = tile - int('0');
+				map[j * mapSize.x + i] = tile -int('0');
 		}
 		fin.get(tile);
 #ifndef _WIN32
 		fin.get(tile);
 #endif
 	}
+	*/
 	fin.close();
 	
 	return true;
@@ -187,6 +208,12 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 				nTiles++;
 				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
 				texCoordTile[0] = glm::vec2(float((tile-1) % 2) / tilesheetSize.x, float((tile-1)/2) / tilesheetSize.y);
+
+			//	float a1 = ( float((tile - 1) % tilesheetSize.x) / tilesheetSize.x);
+			//	float a2 = (float((tile - 1) / tilesheetSize.x)  / tilesheetSize.y);
+			//	texCoordTile[0] = glm::vec2(a1, a2);
+			//	texCoordTile[0] = glm::vec2(float((tile - 1) % 2) / tilesheetSize.x, float((tile - 1) / 2) / tilesheetSize.y);
+
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
 				//texCoordTile[0] += halfTexel;
 				texCoordTile[1] -= halfTexel;
@@ -281,7 +308,12 @@ bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) c
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
+<<<<<<< HEAD
 		if (map[y * mapSize.x + x] != 0)
+=======
+		int pos = map[y * mapSize.x + x];
+		if ( pos == 0)
+>>>>>>> Judit
 			return true;
 	}
 	
@@ -297,7 +329,8 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		int pos = map[y * mapSize.x + x];
+		if ( pos == 0)
 			return true;
 	}
 	
@@ -313,7 +346,11 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 	y = (pos.y + size.y - 1) / tileSize;
 	for(int x=x0; x<=x1; x++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		// 62 && 72 Puente
+		// 43 && 44 Hierba
+		int pos = map[y * mapSize.x + x];
+
+		if (pos == 43 || pos == 44 || pos == 0 || pos == 62 || pos == 72 ) 
 		{
 			if(*posY - tileSize * y + size.y <= 4)
 			{

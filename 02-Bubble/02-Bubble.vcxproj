@@ -14,6 +14,7 @@
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Enemyrun.h" />
     <ClInclude Include="EnemyStage2Key.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="PantallaInicialJP.h" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Enemyrun.cpp" />
     <ClCompile Include="EnemyStage2Key.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -96,11 +98,16 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\src;..\..\..\libs\freeglut\include;..\..\..\libs\glew-1.13.0\include;..\..\..\libs\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+
       <AdditionalLibraryDirectories>D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\include;D:\FIB\VJ\2DGame\02-Bubble\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Cros\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+
+      <AdditionalLibraryDirectories>C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\include;C:\Users\Judit\source\repos\VJScrub\ContraVJ\Libs\irrKlang-1.6.0\lib\Win32-visualStudio;..\..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\..\libs\freeglut\lib;..\..\..\libs\glew-1.13.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SOIL.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

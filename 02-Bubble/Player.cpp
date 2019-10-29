@@ -86,6 +86,7 @@ void Player::update(int deltaTime)
 {
 	AnimacionActual = sprite->animation();
 	sprite->update(deltaTime);
+	ignoreDownColision = false;
 	if (Game::instance().getSpecialKey(GLUT_KEY_RIGHT) && Game::instance().getSpecialKey(GLUT_KEY_UP))
 	{
 		if (sprite->animation() != MOVE_RIGHT_UP && !bJumping)
@@ -144,6 +145,13 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(STAND_RIGHT);
 		}
 	}
+
+	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN) && Game::instance().getKey(32)) {
+
+		posPlayer.y += FALL_STEP;
+
+	}
+
 	else if (Game::instance().getSpecialKey(GLUT_KEY_DOWN))
 	{
 		jugadorVx = 0;
@@ -173,6 +181,7 @@ void Player::update(int deltaTime)
 			direccion = UP;
 		}
 	}
+	
 	else
 	{
 		jugadorVx = 0;
@@ -241,15 +250,17 @@ void Player::update(int deltaTime)
 	else
 	{
 		posPlayer.y += FALL_STEP;
+
 		if(map->collisionMoveDown2(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 		{
-			if(Game::instance().getKey(32))
+			if (Game::instance().getKey(32))
 			{
 				bJumping = true;
 				jumpAngle = 0;
 				startY = posPlayer.y;
 			}
 		}
+		
 	}
 	
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
