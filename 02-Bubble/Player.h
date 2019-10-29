@@ -43,6 +43,7 @@ private:
 	Sprite *sprite;
 	TileMap *map;
 	int direccion;
+	bool ignoreDownColision;
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;

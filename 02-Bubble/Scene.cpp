@@ -15,7 +15,7 @@
 #define SCREEN_Y 16
 
 #define INIT_PLAYER_X_TILES 4
-#define INIT_PLAYER_Y_TILES 21
+#define INIT_PLAYER_Y_TILES 10
 
 enum CicloVida
 {
@@ -138,7 +138,7 @@ void Scene::update(int deltaTime)
 		if (Game::instance().getKey('x'))
 		{
 			Estado = Level1;
-			Estado = Level2;
+			//Estado = Level2;
 			changeSound(Estado);
 		}
 
