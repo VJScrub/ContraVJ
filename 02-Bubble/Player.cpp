@@ -25,6 +25,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	bJumping = false;
 	bdunking = false;
+	lives = 4;
 	spritesheet.loadFromFile("images/bub3.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.125, 0.125), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(11);
@@ -271,6 +272,10 @@ void Player::render()
 	sprite->render();
 }
 
+void Player::recover() {
+	lives = 4;
+}
+
 void Player::setTileMap(TileMap *tileMap)
 {
 	map = tileMap;
@@ -311,4 +316,9 @@ int Player::getAnimation()
 int Player::getDireccion()
 {
 	return direccion;
+}
+
+bool Player::die() {
+	lives -= 1;
+	return lives == 0;
 }

@@ -120,10 +120,12 @@ void Scene::update(int deltaTime)
 	float vx = player->getVX();
 	float vy = player->getVY();
 
+
 	switch (Estado)
 	{
 	case Pantalla_Inicial:
-		
+
+		player->recover();
 		pijp->update(deltaTime);
 		if (Game::instance().getKey('c'))
 		{
@@ -145,8 +147,10 @@ void Scene::update(int deltaTime)
 		break;
 	case Level1:
 
+
 		currentTime += deltaTime;
 		player->update(deltaTime);
+
 
 		for (int k = 0; k < 6; k++) {
 			for (int i = 0; i < shots.size(); i++) {
@@ -175,12 +179,38 @@ void Scene::update(int deltaTime)
 
 		}
 
+
+		player_status(x, y);
 		for (int i = 0; i < enemies.size(); i++) {
 			current_x = enemies[i]->getPositionX();
 			current_y = enemies[i]->getPositionY();
 			if ((current_x > cameraX - (SCREEN_WIDTH + (INIT_PLAYER_X_TILES + 1) * map->getTileSize()) && current_x < cameraX) && (current_y < cameraY && current_y > -16))
 			{
-				enemies[i]->update(deltaTime);
+				act = false;
+				player_x = player->getPositionX();
+				player_y = player->getPositionY();
+				if (current_x - player_x  < 5*map->getTileSize() && current_x - player_x > 0)
+					act = true;
+				enemies[i]->update(deltaTime, act);
+					delay_enemy_shoot++;
+					if (delay_enemy_shoot == 1) {
+						int direccion;
+						float posX, posY;
+						direccion = enemies[i]->getDireccion();
+
+						posX = enemies[i]->getPositionX();
+						posY = enemies[i]->getPositionY();
+						makeShot(false, false, posX, posY, direccion);
+					
+
+
+				}
+
+
+
+				if (enemies[i]->getType() == 2) {
+				
+				}
 				if (enemies[i]->final()) {
 					enemies.erase(enemies.begin() + i);
 					i -= 1;
@@ -203,7 +233,13 @@ void Scene::update(int deltaTime)
 			if (shotDelay == false)
 			{
 				shotDelay = true;
-				makeShot(true,false);
+				int direccion;
+				float posX, posY;
+				direccion = player->getDireccion();
+
+				posX = player->getPositionX();
+				posY = player->getPositionY();
+				makeShot(true,false, posX, posY, direccion);
 			}
 			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
 		}
@@ -228,6 +264,7 @@ void Scene::update(int deltaTime)
 		//	cameraY = y + cameraY;
 		//	cameraY -= 2 * SCREEN_Y / 3;
 		//}
+
 		projection = glm::ortho(cameraX - SCREEN_WIDTH, cameraX, cameraY, 0.f);
 
 
@@ -240,7 +277,6 @@ void Scene::update(int deltaTime)
 		currentTime += deltaTime;
 
 		finalboss->update(deltaTime);
-
 		if (finalboss->getMostrar() && shotBossDelay < 0) {
 			shotBossDelay = 100;
 			newShot();
@@ -326,7 +362,13 @@ void Scene::update(int deltaTime)
 			if (shotDelay == false)
 			{
 				shotDelay = true;
-				makeShot(true, true);
+				int direccion;
+				float posX, posY;
+				direccion = playerVert->getDireccion();
+
+				posX = playerVert->getPositionX();
+				posY = playerVert->getPositionY();
+				makeShot(true, true, posX, posY, direccion);
 			}
 			//Shot::init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram)
 		}
@@ -398,25 +440,10 @@ void Scene::update(int deltaTime)
 
 }
 
-void Scene::makeShot(bool playershot, bool vertical)
+void Scene::makeShot(bool playershot, bool vertical, float posX, float posY, int direccion)
 {
 	newShot();
 	shots[shots.size() - 1] = new Shot();
-	int direccion;
-	float posX, posY;
-	if (vertical) {
-
-		direccion = playerVert->getDireccion();
-
-		posX = playerVert->getPositionX();
-		posY = playerVert->getPositionY();
-	}
-	else {
-		direccion = player->getDireccion();
-
-		posX = player->getPositionX();
-		posY = player->getPositionY();
-	}
 
 	if (vertical) {
 		switch (direccion)
@@ -551,6 +578,19 @@ void Scene::render()
 		
 }
 
+void Scene::player_status(int playerx, int playery) {
+	for (int i = 0; i < enemies.size(); i++) {
+		if (enemies[i]->collision(playerx, playery, glm::ivec2(16, 32)))
+		{
+			if (!enemies[i]->getMuerto() && player->die()) {
+				Estado = Creditos;
+			}
+			enemies[i]->muerteEnemyPersona();
+		}
+				
+	}
+}
+
 void Scene::iniNumberShots(int zero)
 {
 	shots.clear();
@@ -622,7 +662,14 @@ void Scene::initEnemies(const string& enemiesFile)
 			if (tile == '$') {
 				newEnemy();
 				enemies[enemies.size() - 1] = new Enemy();
-				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
+				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 1);
+				enemies[enemies.size() - 1]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
+				enemies[enemies.size() - 1]->setTileMap(map);
+			}
+			if (tile == '#') {
+				newEnemy();
+				enemies[enemies.size() - 1] = new Enemy();
+				enemies[enemies.size() - 1]->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram, 2);
 				enemies[enemies.size() - 1]->setPosition(glm::vec2(i * map->getTileSize(), j * map->getTileSize()));
 				enemies[enemies.size() - 1]->setTileMap(map);
 			}

@@ -17,6 +17,8 @@ public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
 	void update(int deltaTime);
 	void render();
+
+	void recover();
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
@@ -33,6 +35,8 @@ public:
 
 	int getDireccion();
 
+	bool die();
+
 	
 private:
 	bool bJumping;
@@ -42,8 +46,7 @@ private:
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
-	int direccion;
-	bool ignoreDownColision;
+	int direccion, lives;
 
 	int AnimacionActual;
 	float  jugadorVx, jugadorVy;

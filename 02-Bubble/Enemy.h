@@ -8,9 +8,9 @@ class Enemy
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
+	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram, int type);
 
-	void update(int deltaTime);
+	void update(int deltaTime, bool act);
 
 	void render();
 
@@ -24,9 +24,17 @@ public:
 
 	bool hurted(float x, float y);
 
+	int getDireccion();
+
 	void muerteEnemyPersona();
 
+	int getType();
+
 	bool final();
+
+	bool getMuerto();
+
+	bool collision(int x, int y, const glm::ivec2& size);
 
 private:
 	bool bJumping;
@@ -39,7 +47,9 @@ private:
 	TileMap* map;
 	bool muerto;
 	int DelayMuerte;
+	int enemy_type;
 	bool fin;
 };
 
 #endif // _ENEMY_INCLUDE
+
